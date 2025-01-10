@@ -1,4 +1,10 @@
-import { timestamp, text, pgTable, integer } from "drizzle-orm/pg-core";
+import {
+	timestamp,
+	text,
+	pgTable,
+	integer,
+	boolean,
+} from "drizzle-orm/pg-core";
 
 // USER TABLES
 
@@ -11,12 +17,14 @@ export const users = pgTable("NguoiDung", {
 	maDinhDanh: text("maDinhDanh").notNull().unique().primaryKey(),
 	ten: text("ten").notNull(),
 	email: text("email").notNull().unique(),
-	maDinhDanhQuyen: text("maDinhDanhQuyen")
-		.notNull()
-		.references(() => roles.maDinhDanh, {
+	maDinhDanhQuyen: text("maDinhDanhQuyen").references(
+		() => roles.maDinhDanh,
+		{
 			onUpdate: "cascade",
 			onDelete: "set null",
-		}),
+		}
+	),
+	initialSetupCompleted: boolean("initialSetupCompleted"),
 });
 
 export const keys = pgTable("Keys", {
@@ -39,8 +47,7 @@ export const sessions = pgTable("session", {
 		.references(() => users.maDinhDanh, {
 			onDelete: "cascade",
 			onUpdate: "cascade",
-		})
-		.unique(),
+		}),
 });
 
 // INVENTORY TABLES
@@ -86,8 +93,20 @@ export const loaiDongVat = pgTable("loaiDongVat", {
 	ten: text("ten").notNull(),
 	moiTruongSong: text("moiTruongSong"),
 	viTriPhanBo: text("viTriPhanBo"),
-	tinhTrangBaoTon: text("tinhTrangBaoTon"),
-	maDinhDanhLoaiBienDong: text("maDinhDanhLoaiBienDong"),
+	maDinhDanhTinhTrangBaoTon: text("maDinhDanhTinhTrangBaoTon").references(
+		() => tinhTrangBaoTon.maDinhDanh,
+		{
+			onUpdate: "cascade",
+			onDelete: "set null",
+		}
+	),
+	maDinhDanhLoaiBienDong: text("maDinhDanhLoaiBienDong").references(
+		() => loaiBienDong.maDinhDanh,
+		{
+			onUpdate: "cascade",
+			onDelete: "set null",
+		}
+	),
 });
 
 export const coSoLuuTruDongVat = pgTable("coSoLuuTruDongVat", {
@@ -106,13 +125,21 @@ export const loaiBienDong = pgTable("loaiBienDong", {
 	ten: text("ten").notNull(),
 });
 
+export const tinhTrangBaoTon = pgTable("tinhTrangBaoTon", {
+	maDinhDanh: text("maDinhDanh").notNull().unique().primaryKey(),
+	ten: text("ten").notNull(),
+});
+
 // USER TYPES
+
+export type Role = typeof roles.$inferSelect;
+export type newRole = typeof roles.$inferInsert;
 
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 
 export type Keys = typeof keys.$inferSelect;
-export type NewKeys = typeof keys.$inferInsert;
+export type NewKey = typeof keys.$inferInsert;
 
 export type Session = typeof sessions.$inferSelect;
 export type newSession = typeof sessions.$inferInsert;
@@ -139,5 +166,13 @@ export type newLoaiDongVat = typeof loaiDongVat.$inferInsert;
 export type CoSoLuuTruDongVat = typeof coSoLuuTruDongVat.$inferSelect;
 export type newCoSoLuuTruDongVat = typeof coSoLuuTruDongVat.$inferInsert;
 
+export type TinhTrangBaoTon = typeof tinhTrangBaoTon.$inferSelect;
+export type newTinhTrangBaoTon = typeof tinhTrangBaoTon.$inferInsert;
+
 export type LoaiBienDong = typeof loaiBienDong.$inferSelect;
 export type newLoaiBienDong = typeof loaiBienDong.$inferInsert;
+
+export type baselineType = {
+	maDinhDanh: string;
+	ten: string;
+};

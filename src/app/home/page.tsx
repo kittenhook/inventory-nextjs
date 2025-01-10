@@ -1,12 +1,9 @@
 import Navbar from "@/components/custom/Navbar";
-import { retrieveAllPosts } from "@/lib/postInteractions";
-import Link from "next/link";
 
 import {
 	Card,
 	CardContent,
 	CardDescription,
-	CardFooter,
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
@@ -16,7 +13,9 @@ export default async function Home() {
 	return (
 		<div className='mx-[100px] flex flex-col gap-3'>
 			<Navbar></Navbar>
+			<h1></h1>
 			<div className='w-fill flex justify-center items-center'>
+				<h1>Stack I've used:</h1>
 				<Card className='w-[350px]'>
 					<CardHeader>
 						<CardTitle>HUST2024 Database</CardTitle>

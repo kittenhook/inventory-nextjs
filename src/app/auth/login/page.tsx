@@ -12,11 +12,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+type ResponseData = {
+	message: string;
+	token?: string;
+};
 
 export default function LoginPage() {
 	const [email, setEmail] = React.useState("");
 	const [password, setPassword] = React.useState("");
-
+	const router = useRouter();
 	async function handleSubmission() {
 		const response = await fetch("/api/auth/login", {
 			method: "POST",
@@ -28,14 +34,14 @@ export default function LoginPage() {
 				password: password,
 			}),
 		});
-		const responseData = await response.json();
+		const responseData: ResponseData = await response.json();
 
 		if (!response.ok) {
 			console.log(responseData);
 			alert("invalid password");
 			return;
 		}
-		alert("correct!");
+		router.push("/home");
 	}
 
 	return (

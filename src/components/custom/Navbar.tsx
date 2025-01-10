@@ -1,3 +1,4 @@
+"use server";
 import {
 	NavigationMenu,
 	NavigationMenuContent,
@@ -10,12 +11,16 @@ import {
 	NavigationMenuViewport,
 } from "@/components/ui/navigation-menu";
 
+import { cookies } from "next/headers";
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-function loggedInOrNot() {
-	const loggedIn = false;
-	if (!loggedIn) {
+async function loggedInOrNot() {
+	const cookieStore = await cookies();
+	const sessionObjectJSON = cookieStore.get("sessionObject")!.value || "{}";
+	const sessionObject = JSON.parse(sessionObjectJSON);
+	if (!sessionObject) {
 		return (
 			<div className='flex gap-1'>
 				<Button asChild>
@@ -29,12 +34,15 @@ function loggedInOrNot() {
 	}
 	return (
 		<span>
-			Welcome back, <Link href='/user/hallo'>user!</Link>
+			Welcome back,{" "}
+			<Link href={`/database/nguoiDung/${sessionObject.user.maDinhDanh}`}>
+				{sessionObject.user.ten}!
+			</Link>
 		</span>
 	);
 }
 
-export default function Navbar() {
+export default async function Navbar() {
 	return (
 		<div className='w-full h-[50px] flex items-center gap-7 border-b-2 border-gray-200'>
 			<span>HUST2024</span>

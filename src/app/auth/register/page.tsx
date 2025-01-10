@@ -18,12 +18,25 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { Role } from "@/lib/schema";
 
 export default function CardWithForm() {
 	const [name, setName] = React.useState("");
 	const [email, setEmail] = React.useState("");
 	const [password, setPassword] = React.useState("");
-	const [role, setRole] = React.useState("member");
+	const [role, setRole] = React.useState("");
+
+	const [rolesData, setRolesData] = React.useState<Role[]>([]);
+
+	React.useEffect(() => {
+		async function getRoles() {
+			const responseData: Role[] = await (
+				await fetch("http://localhost:3000/api/database/Quyen")
+			).json();
+			setRolesData(responseData);
+		}
+		getRoles();
+	}, []);
 
 	function handleValueChange(value: string) {
 		setRole(value);
@@ -99,12 +112,16 @@ export default function CardWithForm() {
 										<SelectValue placeholder='Select' />
 									</SelectTrigger>
 									<SelectContent position='popper'>
-										<SelectItem value='member'>
-											Member
-										</SelectItem>
-										<SelectItem value='moderator'>
-											Moderator
-										</SelectItem>
+										{rolesData.map((e) => {
+											return (
+												<SelectItem
+													key={e.maDinhDanh}
+													value={e.maDinhDanh}
+												>
+													{e.ten}
+												</SelectItem>
+											);
+										})}
 									</SelectContent>
 								</Select>
 							</div>
