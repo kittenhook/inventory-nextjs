@@ -2,19 +2,58 @@
 import {
 	NavigationMenu,
 	NavigationMenuContent,
-	NavigationMenuIndicator,
 	NavigationMenuItem,
-	NavigationMenuLink,
+	// NavigationMenuLink,
 	NavigationMenuList,
 	NavigationMenuTrigger,
 	navigationMenuTriggerStyle,
-	NavigationMenuViewport,
 } from "@/components/ui/navigation-menu";
 
 import { cookies } from "next/headers";
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+
+type DatabasePages = {
+	title: string;
+	description: string;
+	url: string;
+}[];
+
+const databasePages: DatabasePages = [
+	{
+		title: "Users",
+		description: "Database of users.",
+		url: "/database/nguoiDung",
+	},
+	{
+		title: "Roles",
+		description: "Database of all roles.",
+		url: "/database/Quyen",
+	},
+	{
+		title: "Trees",
+		description: "Database of all trees.",
+		url: "/database/loaiGiong/Cay",
+	},
+	{
+		title: "Animals",
+		description: "Database of all animals.",
+		url: "/database/loaiGiong/DongVat",
+	},
+
+	{
+		title: "Tree facilities",
+		description: "Database of tree facilities.",
+		url: "/database/coSo/SanXuatCayTrong",
+	},
+	{
+		title: "Animal facilities",
+		description: "Database of animal facilities.",
+		url: "/database/coSo/LuuTruDongVat",
+	},
+];
 
 async function loggedInOrNot() {
 	const cookieStore = await cookies();
@@ -59,12 +98,39 @@ export default async function Navbar() {
 								</Link>
 							</NavigationMenuItem>
 							<NavigationMenuItem>
-								<Link
+								<NavigationMenuTrigger>
+									Database
+								</NavigationMenuTrigger>
+								<NavigationMenuContent>
+									<ul className='grid grid-cols-1 lg:grid-cols-2 w-max gap-1 p-4'>
+										{databasePages.map((page) => {
+											return (
+												<li
+													key={page.title}
+													className={cn(
+														navigationMenuTriggerStyle(),
+														"w-full h-auto block"
+													)}
+												>
+													<Link href={page.url}>
+														<p className='font-extrabold'>
+															{page.title}
+														</p>
+														<p>
+															{page.description}
+														</p>
+													</Link>
+												</li>
+											);
+										})}
+									</ul>
+								</NavigationMenuContent>
+								{/* <Link
 									href='/database'
 									className={navigationMenuTriggerStyle()}
 								>
 									Database
-								</Link>
+								</Link> */}
 							</NavigationMenuItem>
 						</NavigationMenuList>
 					</NavigationMenu>

@@ -44,6 +44,7 @@ export async function DELETE(
 ) {
 	const uuid = (await params).uuid;
 	const user = await deleteUser({ maDinhDanh: uuid });
+	return NextResponse.json(user);
 }
 
 export async function PATCH(
@@ -51,10 +52,16 @@ export async function PATCH(
 	{ params }: { params: Promise<Parameters> }
 ) {
 	try {
-		const uuid = (await params).uuid;
-		const updateParameters = await req.json();
-		const updatedUser = await updateUser(updateParameters);
-		return NextResponse.json(updatedUser, { status: 200 });
+		const body = await params;
+		const updateParameters: UpdateBody = await req.json();
+		const updateBody: UpdateBody = {
+			maDinhDanh: body.uuid,
+			ten: updateParameters.ten,
+			email: updateParameters.email,
+			maDinhDanhQuyen: updateParameters.maDinhDanhQuyen,
+		};
+		const updatedUser = await updateUser(updateBody);
+		return NextResponse.json(updatedUser);
 	} catch (e) {
 		console.log(e);
 		return NextResponse.json(

@@ -10,7 +10,11 @@ import {
 	coSoLuuTruDongVat,
 	newCoSoLuuTruDongVat,
 	newCoSoSanXuatCay,
+	cities,
+	districts,
 } from "./schema";
+
+import { eq } from "drizzle-orm";
 
 export async function retrieveAllLoaiBienDong() {
 	return await db.select().from(loaiBienDong);
@@ -20,8 +24,35 @@ export async function retrieveAllTinhTrangBaoTon() {
 	return await db.select().from(tinhTrangBaoTon);
 }
 
+export async function retrieveTinhTrangBaoTon(aarguments: { uuid: string }) {
+	const [ttbt] = await db
+		.select()
+		.from(tinhTrangBaoTon)
+		.where(eq(tinhTrangBaoTon.maDinhDanh, aarguments.uuid));
+	if (!ttbt) return null;
+	return ttbt;
+}
+
+export async function retrieveLoaiBienDong(aarguments: { uuid: string }) {
+	const [lbd] = await db
+		.select()
+		.from(loaiBienDong)
+		.where(eq(loaiBienDong.maDinhDanh, aarguments.uuid));
+	if (!lbd) return null;
+	return lbd;
+}
+
 export async function retrieveAllAnimals() {
 	return await db.select().from(loaiDongVat);
+}
+
+export async function retrieveAnimal(animalArguments: { maDinhDanh: string }) {
+	const [animal] = await db
+		.select()
+		.from(loaiDongVat)
+		.where(eq(loaiDongVat.maDinhDanh, animalArguments.maDinhDanh));
+	if (!animal) return null;
+	return animal;
 }
 
 export async function createNewAnimal(animalArguments: newLoaiDongVat) {
@@ -34,6 +65,15 @@ export async function createNewAnimal(animalArguments: newLoaiDongVat) {
 
 export async function retrieveAllTrees() {
 	return await db.select().from(loaiGiong);
+}
+
+export async function retrieveTree(treeArguments: { maDinhDanh: string }) {
+	const [animal] = await db
+		.select()
+		.from(loaiGiong)
+		.where(eq(loaiGiong.maDinhDanh, treeArguments.maDinhDanh));
+	if (!animal) return null;
+	return animal;
 }
 
 export async function createNewTree(treeArguments: newLoaiGiong) {
@@ -50,6 +90,28 @@ export async function retrieveAllTreeFactories() {
 
 export async function retrieveAllAnimalFactories() {
 	return await db.select().from(coSoLuuTruDongVat);
+}
+
+export async function retrieveAnimalFactory(factoryArguments: {
+	maDinhDanh: string;
+}) {
+	const [animalFactory] = await db
+		.select()
+		.from(coSoLuuTruDongVat)
+		.where(eq(coSoLuuTruDongVat.maDinhDanh, factoryArguments.maDinhDanh));
+	if (!animalFactory) return null;
+	return animalFactory;
+}
+
+export async function retrieveTreeFactory(factoryArguments: {
+	maDinhDanh: string;
+}) {
+	const [treeFactory] = await db
+		.select()
+		.from(coSoSanXuatCay)
+		.where(eq(coSoSanXuatCay.maDinhDanh, factoryArguments.maDinhDanh));
+	if (!treeFactory) return null;
+	return treeFactory;
 }
 
 export async function createAnimalFactory(
@@ -79,4 +141,12 @@ export async function createTreeFactory(
 		.values(factoryData)
 		.returning();
 	return treeFactory;
+}
+
+export async function retrieveAllCities() {
+	return await db.select().from(cities);
+}
+
+export async function retrieveAllDistricts() {
+	return await db.select().from(districts);
 }

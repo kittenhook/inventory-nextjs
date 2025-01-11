@@ -41,7 +41,7 @@ export default function LoginPage() {
 			alert("invalid password");
 			return;
 		}
-		router.push("/home");
+		router.push("/");
 	}
 
 	return (

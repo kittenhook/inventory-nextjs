@@ -11,7 +11,25 @@ import {
 
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { retrieveAllAnimals } from "@/lib/dbInteractions";
+import {
+	retrieveAllAnimals,
+	retrieveLoaiBienDong,
+	retrieveTinhTrangBaoTon,
+} from "@/lib/dbInteractions";
+
+async function resolveTTBT(uuid: string | null) {
+	if (!uuid) return "";
+	const ttbt = await retrieveTinhTrangBaoTon({ uuid: uuid });
+	if (!ttbt) return "";
+	return ttbt.ten;
+}
+
+async function resolveLoaiBienDong(uuid: string | null) {
+	if (!uuid) return "";
+	const lbd = await retrieveLoaiBienDong({ uuid: uuid });
+	if (!lbd) return "";
+	return lbd.ten;
+}
 
 export default async function DongVat() {
 	const animals = await retrieveAllAnimals();
@@ -36,7 +54,7 @@ export default async function DongVat() {
 						</CardHeader>
 						<CardContent>
 							<p>Card Content</p>
-						</CardContent>
+			 			</CardContent>
 						<CardFooter>
 							<p>Card Footer</p>
 						</CardFooter>
@@ -63,10 +81,20 @@ export default async function DongVat() {
 									<TableCell>{row.moiTruongSong}</TableCell>
 									<TableCell>{row.viTriPhanBo}</TableCell>
 									<TableCell>
-										{row.maDinhDanhLoaiBienDong}
+										<Link href={`/database/loaiBienDong`}>
+											{resolveLoaiBienDong(
+												row.maDinhDanhLoaiBienDong
+											)}
+										</Link>
 									</TableCell>
 									<TableCell>
-										{row.maDinhDanhTinhTrangBaoTon}
+										<Link
+											href={`/database/tinhTrangBaoTon`}
+										>
+											{resolveTTBT(
+												row.maDinhDanhTinhTrangBaoTon
+											)}
+										</Link>
 									</TableCell>
 								</TableRow>
 							);

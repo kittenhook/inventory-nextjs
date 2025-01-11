@@ -17,6 +17,7 @@ export default async function newAnimalPage() {
 	const lbd = await retrieveAllLoaiBienDong();
 	return (
 		<div className='mx-[100px] w-fill flex'>
+			<Navbar></Navbar>
 			<div className='w-fill flex justify-center items-center'>
 				<Card>
 					<CardHeader>

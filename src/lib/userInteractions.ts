@@ -149,6 +149,15 @@ export async function retrieveAllUserRoles() {
 	return db.select().from(roles);
 }
 
+export async function retrieveUserRole(roleArgument: { uuid: string }) {
+	const [role] = await db
+		.select()
+		.from(roles)
+		.where(eq(roles.maDinhDanh, roleArgument.uuid));
+	if (!role) return null;
+	return role;
+}
+
 export async function createUserRole(roleArgument: { ten: string }) {
 	if (!roleArgument.ten) return null;
 	const roleData: newRole = {

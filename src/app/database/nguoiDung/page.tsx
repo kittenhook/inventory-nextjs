@@ -1,5 +1,5 @@
 import Navbar from "@/components/custom/Navbar";
-import { retrieveAllUsers } from "@/lib/userInteractions";
+import { retrieveAllUsers, retrieveUserRole } from "@/lib/userInteractions";
 import * as React from "react";
 
 import {
@@ -11,6 +11,14 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
+import Link from "next/link";
+
+async function resolveRole(uuid: string | null) {
+	if (!uuid) return "";
+	const role = await retrieveUserRole({ uuid: uuid });
+	if (!role) return "";
+	return role.ten;
+}
 
 export default async function UserPage() {
 	const users = await retrieveAllUsers();
@@ -40,11 +48,19 @@ export default async function UserPage() {
 						{users.map((user) => {
 							return (
 								<TableRow key={user.maDinhDanh}>
-									<TableCell>{user.maDinhDanh}</TableCell>
+									<TableCell>
+										<Link
+											href={`/database/nguoiDung/${user.maDinhDanh}`}
+										>
+											{user.maDinhDanh}
+										</Link>
+									</TableCell>
 									<TableCell>{user.ten}</TableCell>
 									<TableCell>{user.email}</TableCell>
 									<TableCell className='text-right'>
-										{user.maDinhDanhQuyen || "not provided"}
+										<Link href={`/database/Quyen`}>
+											{resolveRole(user.maDinhDanhQuyen)}
+										</Link>
 									</TableCell>
 								</TableRow>
 							);

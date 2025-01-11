@@ -61,18 +61,23 @@ export const coSoSanXuatCay = pgTable("coSoSanXuatCay", {
 	maDinhDanh: text("maDinhDanh").notNull().unique().primaryKey(),
 	ten: text("ten").notNull(),
 	congSuat: integer("congSuat").notNull(),
-	maDinhDanhLoaiGiong: text("maDinhDanhLoaiGiong")
-		.references(() => loaiGiong.maDinhDanh, {
+	maDinhDanhLoaiGiong: text("maDinhDanhLoaiGiong").references(
+		() => loaiGiong.maDinhDanh,
+		{
 			onDelete: "set null",
 			onUpdate: "cascade",
-		})
-		.unique(),
+		}
+	),
 	maDinhDanhNguoiPhuTrach: text("maDinhDanhNguoiPhuTrach").references(
 		() => users.maDinhDanh,
 		{
 			onDelete: "set null",
 			onUpdate: "cascade",
 		}
+	),
+	maDinhDanhQuan: text("maDinhDanhQuan").references(
+		() => districts.maDinhDanh,
+		{ onDelete: "set null", onUpdate: "cascade" }
 	),
 });
 
@@ -118,6 +123,17 @@ export const coSoLuuTruDongVat = pgTable("coSoLuuTruDongVat", {
 			onUpdate: "cascade",
 		})
 		.unique(),
+	maDinhDanhNguoiPhuTrach: text("maDinhDanhNguoiPhuTrach").references(
+		() => users.maDinhDanh,
+		{
+			onDelete: "set null",
+			onUpdate: "cascade",
+		}
+	),
+	maDinhDanhQuan: text("maDinhDanhQuan").references(
+		() => districts.maDinhDanh,
+		{ onDelete: "set null", onUpdate: "cascade" }
+	),
 });
 
 export const loaiBienDong = pgTable("loaiBienDong", {
@@ -128,6 +144,23 @@ export const loaiBienDong = pgTable("loaiBienDong", {
 export const tinhTrangBaoTon = pgTable("tinhTrangBaoTon", {
 	maDinhDanh: text("maDinhDanh").notNull().unique().primaryKey(),
 	ten: text("ten").notNull(),
+});
+
+// AREAS TABLES
+export const cities = pgTable("thanhPho", {
+	maDinhDanh: text("maDinhDanh").notNull().unique().primaryKey(),
+	ten: text("ten").notNull(),
+});
+
+export const districts = pgTable("quan", {
+	maDinhDanh: text("maDinhDanh").notNull().unique().primaryKey(),
+	ten: text("ten").notNull(),
+	maDinhDanhThanhPho: text("maDinhDanhThanhPho")
+		.references(() => cities.maDinhDanh, {
+			onDelete: "cascade",
+			onUpdate: "cascade",
+		})
+		.notNull(),
 });
 
 // USER TYPES
@@ -171,6 +204,13 @@ export type newTinhTrangBaoTon = typeof tinhTrangBaoTon.$inferInsert;
 
 export type LoaiBienDong = typeof loaiBienDong.$inferSelect;
 export type newLoaiBienDong = typeof loaiBienDong.$inferInsert;
+
+// AREAS
+export type ThanhPho = typeof cities.$inferSelect;
+export type newThanhPho = typeof cities.$inferInsert;
+
+export type Quan = typeof districts.$inferSelect;
+export type newQuan = typeof districts.$inferInsert;
 
 export type baselineType = {
 	maDinhDanh: string;

@@ -24,7 +24,7 @@ export default async function UserPage() {
 						<TableRow>
 							<TableHead className='w-[300px]'>UUID</TableHead>
 							<TableHead>Ten</TableHead>
-							<TableHead>Loai Dong Vat</TableHead>
+							<TableHead></TableHead>
 						</TableRow>
 					</TableHeader>
 					<TableBody>

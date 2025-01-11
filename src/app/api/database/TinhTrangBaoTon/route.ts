@@ -1,5 +1,4 @@
 import { retrieveAllTinhTrangBaoTon } from "@/lib/dbInteractions";
-import { TinhTrangBaoTon } from "@/lib/schema";
 import { NextResponse } from "next/server";
 
 export async function GET() {

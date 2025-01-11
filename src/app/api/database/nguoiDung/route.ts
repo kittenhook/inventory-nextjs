@@ -1,8 +1,7 @@
 import { retrieveAllUsers } from "@/lib/userInteractions";
-import { NextApiRequest, NextApiResponse } from "next";
 import { NextResponse } from "next/server";
 
-export async function GET(req: NextApiRequest) {
+export async function GET() {
 	try {
 		const users = await retrieveAllUsers();
 		if (!users)

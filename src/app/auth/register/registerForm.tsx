@@ -18,23 +18,6 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { Role } from "@/lib/schema";
-
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "@/components/ui/input";
-
-const userSchema = z.object({
-	maDinhDanh: z.string().uuid(),
-	ten: z.string(),
-	email: z.string().email(),
-	maDinhDanhQuyen: z.string().uuid(),
-});
-
-type pageProps = {
-	roles: Role[];
-};
-
 export default function CardWithForm() {
 	const [name, setName] = React.useState("");
 	const [email, setEmail] = React.useState("");

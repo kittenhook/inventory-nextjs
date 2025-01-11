@@ -7,16 +7,10 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import {
-	retrieveAllLoaiBienDong,
-	retrieveAllTinhTrangBaoTon,
-} from "@/lib/dbInteractions";
-
 export default async function newTreePage() {
-	const ttbt = await retrieveAllTinhTrangBaoTon();
-	const lbd = await retrieveAllLoaiBienDong();
 	return (
 		<div className='mx-[100px] w-fill flex'>
+			<Navbar></Navbar>
 			<div className='w-fill flex justify-center items-center'>
 				<Card>
 					<CardHeader>
