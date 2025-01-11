@@ -5,7 +5,7 @@ import { User } from "@/lib/schema";
 export default async function UserPage({
 	params,
 }: {
-	params: { uuid: string };
+	params: Promise<{ uuid: string }>;
 }) {
 	const uuid = (await params).uuid;
 	const roles = await retrieveAllUserRoles();

@@ -11,23 +11,11 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
+
 export default function CardWithForm() {
 	const [name, setName] = React.useState("");
 	const [email, setEmail] = React.useState("");
 	const [password, setPassword] = React.useState("");
-	const [role, setRole] = React.useState("");
-
-	function handleValueChange(value: string) {
-		setRole(value);
-	}
-
 	async function handleSubmission() {
 		const response = await fetch("/api/auth/register", {
 			method: "POST",
@@ -38,7 +26,6 @@ export default function CardWithForm() {
 				name: name,
 				email: email,
 				password: password,
-				role: role,
 			}),
 		});
 
@@ -86,29 +73,6 @@ export default function CardWithForm() {
 									setPassword(e.target.value);
 								}}
 							/>
-						</div>
-						<div className='flex flex-col space-y-1.5'>
-							<Label htmlFor='role'>Role</Label>
-							<Select
-								defaultValue='member'
-								onValueChange={handleValueChange}
-							>
-								<SelectTrigger id='role'>
-									<SelectValue placeholder='Select' />
-								</SelectTrigger>
-								<SelectContent position='popper'>
-									{rolesData.map((e) => {
-										return (
-											<SelectItem
-												key={e.maDinhDanh}
-												value={e.maDinhDanh}
-											>
-												{e.ten}
-											</SelectItem>
-										);
-									})}
-								</SelectContent>
-							</Select>
 						</div>
 					</div>
 				</form>
