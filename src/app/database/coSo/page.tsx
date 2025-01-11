@@ -1,3 +1,1 @@
-export default async function Facility() {
-	const;
-}
+export default async function Facility() {}
