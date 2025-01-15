@@ -18,25 +18,18 @@ export async function POST(req: NextRequest) {
 				{ status: 401 }
 			);
 		}
-		const sessionObject = await createUserSession({
+		const session = await createUserSession({
 			maDinhDanhNguoiDung: userkey.user.maDinhDanh,
 		});
-		const cookieData = {
-			user: userkey.user,
-			session: sessionObject,
-		};
 
-		(await cookies()).set("sessionObject", JSON.stringify(cookieData), {
+		(await cookies()).set("session", session.token, {
 			httpOnly: true,
-			maxAge: 60 * 60 * 5,
+			maxAge: Math.floor(session.expiresAt.valueOf() / 1000),
 			sameSite: "strict",
 			path: "/",
 		});
 
-		return NextResponse.json(
-			{ message: "Login successful" },
-			{ status: 200 }
-		);
+		return NextResponse.json(userkey.user, { status: 200 });
 	} catch (e) {
 		console.log(e);
 		return NextResponse.json(

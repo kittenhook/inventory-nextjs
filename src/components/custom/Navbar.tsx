@@ -57,7 +57,8 @@ const databasePages: DatabasePages = [
 
 async function loggedInOrNot() {
 	const cookieStore = await cookies();
-	const sessionObjectJSON = cookieStore.get("sessionObject")!.value || "{}";
+	let sessionObjectJSON = null;
+	sessionObjectJSON = cookieStore.get("sessionObject")!.value;
 	const sessionObject = JSON.parse(sessionObjectJSON);
 	if (!sessionObject) {
 		return (
@@ -91,7 +92,7 @@ export default async function Navbar() {
 						<NavigationMenuList>
 							<NavigationMenuItem>
 								<Link
-									href='/home'
+									href='/'
 									className={navigationMenuTriggerStyle()}
 								>
 									Home

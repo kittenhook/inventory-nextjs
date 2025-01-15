@@ -12,6 +12,7 @@ import {
 	newCoSoSanXuatCay,
 	cities,
 	districts,
+	LoaiGiong,
 } from "./schema";
 
 import { eq } from "drizzle-orm";
@@ -74,6 +75,21 @@ export async function retrieveTree(treeArguments: { maDinhDanh: string }) {
 		.where(eq(loaiGiong.maDinhDanh, treeArguments.maDinhDanh));
 	if (!animal) return null;
 	return animal;
+}
+
+export async function updateTree(treeArguments: LoaiGiong) {
+	const tree = await retrieveTree({ maDinhDanh: treeArguments.maDinhDanh });
+	if (!tree) return null;
+	const updatedTreeData = {
+		ten: treeArguments.ten || tree.ten,
+	};
+	const [updatedTree] = await db
+		.update(loaiGiong)
+		.set(updatedTreeData)
+		.where(eq(loaiGiong.maDinhDanh, treeArguments.maDinhDanh))
+		.returning();
+	if (!updatedTree) return null;
+	return updatedTree;
 }
 
 export async function createNewTree(treeArguments: newLoaiGiong) {
@@ -149,4 +165,21 @@ export async function retrieveAllCities() {
 
 export async function retrieveAllDistricts() {
 	return await db.select().from(districts);
+}
+
+export async function retrieveDistrict(uuid: string) {
+	const [district] = await db
+		.select()
+		.from(districts)
+		.where(eq(districts.maDinhDanh, uuid));
+	if (!district) return null;
+	return district;
+}
+
+export async function retrieveCity(uuid: string) {
+	const [city] = await db
+		.select()
+		.from(cities)
+		.where(eq(cities.maDinhDanh, uuid));
+	return city;
 }

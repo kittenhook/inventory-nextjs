@@ -124,25 +124,20 @@ export async function createUserSession(userArguments: {
 		expiresAt: new Date(Date.now() + 18000000), // 5 hours into the future
 		maDinhDanhNguoiDung: userArguments.maDinhDanhNguoiDung,
 	};
-	await db.insert(sessions).values(sessionData);
-	return sessionData;
+	const [newSession] = await db
+		.insert(sessions)
+		.values(sessionData)
+		.returning();
+	return newSession;
 }
 
-export async function deleteUserSession(userArguments: {
-	maDinhDanhNguoiDung: string;
-	token?: string;
-	// if no token is specified, will wipe every single session under that user's uuid
-}) {
-	const eqExpression = userArguments.token
-		? eq(sessions.token, userArguments.token)
-		: eq(sessions.maDinhDanhNguoiDung, userArguments.maDinhDanhNguoiDung);
-	try {
-		await db.delete(sessions).where(eqExpression);
-		return true;
-	} catch (e) {
-		console.log(e);
-		return false;
-	}
+export async function deleteUserSession(userArguments: { token: string }) {
+	const [deletedSession] = await db
+		.delete(sessions)
+		.where(eq(sessions.token, userArguments.token))
+		.returning();
+	if (!deletedSession) return false;
+	return true;
 }
 
 export async function retrieveAllUserRoles() {
@@ -181,8 +176,5 @@ export async function retrieveUserSessionBySession(tokenArguments: {
 		.from(users)
 		.where(eq(users.maDinhDanh, session.maDinhDanhNguoiDung));
 	if (!user) return null;
-	return {
-		user: user,
-		session: session,
-	};
+	return user;
 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createUser } from "@/lib/userInteractions";
+import { createUser, createUserSession } from "@/lib/userInteractions";
+import { cookies } from "next/headers";
 
 export async function POST(req: NextRequest) {
 	try {
@@ -11,6 +12,16 @@ export async function POST(req: NextRequest) {
 			);
 		}
 		const user = await createUser(name, email, password);
+		const session = await createUserSession({
+			maDinhDanhNguoiDung: user.maDinhDanh,
+		});
+
+		(await cookies()).set("session", session.token, {
+			httpOnly: true,
+			maxAge: Math.floor(session.expiresAt.valueOf() / 1000),
+			sameSite: "strict",
+			path: "/",
+		});
 		return NextResponse.json(user, { status: 200 });
 	} catch (e) {
 		console.log(e);

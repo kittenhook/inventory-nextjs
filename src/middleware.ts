@@ -14,10 +14,10 @@ export const config = {
 export default async function middleware(request: NextRequest) {
 	switch (request.nextUrl.pathname.startsWith("/api")) {
 		case true:
-			return ApiMiddleware(request);
+			// return ApiMiddleware(request);
 			return NextResponse.next();
 		case false:
-			return PageMiddleware(request);
+			// return PageMiddleware(request);
 			return NextResponse.next();
 	}
 }
@@ -61,9 +61,15 @@ async function PageMiddleware(request: NextRequest) {
 	const sessionObject: sessionObjectType = JSON.parse(
 		sessionObjectCookie.value
 	);
-	const serverSessionObjectResponse = await fetch(
-		`${request.nextUrl.origin}/api/auth/authenticate?token=${sessionObject.session.token}`
-	);
+	let serverSessionObjectResponse = null;
+	try {
+		serverSessionObjectResponse = await fetch(
+			`${request.nextUrl.origin}/api/auth/authenticate?token=${sessionObject.session.token}`
+		);
+	} catch (e) {
+		console.log(e);
+		return NextResponse.next();
+	}
 
 	if (!serverSessionObjectResponse.ok) {
 		return NextResponse.redirect(loginURL);

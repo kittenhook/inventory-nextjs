@@ -1,17 +1,13 @@
 // resolve token into user objecet
 import { retrieveUserSessionBySession } from "@/lib/userInteractions";
+import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
-	const { searchParams } = req.nextUrl;
-	const token = searchParams.get("token");
-	if (!token)
-		return NextResponse.json({ message: "Bad Request" }, { status: 400 });
-	const sessionObject = await retrieveUserSessionBySession({ token: token });
-	if (!sessionObject)
-		return NextResponse.json(
-			{ message: "Unauthenticated" },
-			{ status: 404 }
-		);
-	return new NextResponse(JSON.stringify(sessionObject));
+	const cookiesStore = await cookies();
+	const session = cookiesStore.get("session");
+	if (!session) return new NextResponse(null, { status: 400 });
+	const user = await retrieveUserSessionBySession({ token: session.value });
+	if (!user) return new NextResponse(null, { status: 404 });
+	return NextResponse.json(user);
 }
