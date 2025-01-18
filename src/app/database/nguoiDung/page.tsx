@@ -1,5 +1,4 @@
 "use client";
-import TreeTable from "@/components/custom/tables/treeTable";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -8,25 +7,35 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-import TreeCreateForm from "@/components/custom/forms/trees/treeCreateForm";
 import { useEffect, useState } from "react";
-import { LoaiGiong } from "@/lib/schema";
+import { User, Role } from "@/lib/schema";
 import { useAuth } from "@/components/custom/AuthContext";
 import ErrorPage from "@/components/custom/Error";
+import UserTable from "@/components/custom/tables/usersTable";
 
-export default function TreePage() {
-	const [trees, setTrees] = useState<LoaiGiong[]>([]);
+export default function UserPage() {
+	const [data, setData] = useState<{
+		users: User[];
+		roles: Role[];
+	}>({
+		users: [],
+		roles: [],
+	});
 	const [loading, setLoading] = useState(true);
 	const { isAuthenticated } = useAuth();
 	useEffect(() => {
 		if (!isAuthenticated) return;
 		(async () => {
-			const treesResponse = await fetch("/api/database/trees");
-			if (!treesResponse.ok) {
-				return;
-			}
-			const trees = await treesResponse.json();
-			setTrees(trees);
+			let usersArray: User[] = [];
+			let rolesArray: Role[] = [];
+			const usersResponse = await fetch("/api/database/users");
+			const rolesResponse = await fetch("/api/database/roles");
+			if (usersResponse.ok) usersArray = await usersResponse.json();
+			if (rolesResponse.ok) rolesArray = await rolesResponse.json();
+			setData({
+				users: usersArray,
+				roles: rolesArray,
+			});
 			setLoading(false);
 		})();
 	}, [isAuthenticated, loading]);
@@ -42,11 +51,11 @@ export default function TreePage() {
 					</DialogTrigger>
 					<DialogContent>
 						<DialogTitle />
-						<TreeCreateForm />
+						{/* <TreeCreateForm /> */}
 					</DialogContent>
 				</Dialog>
 			</div>
-			<TreeTable trees={trees} />
+			<UserTable users={data.users} roles={data.roles} />
 		</div>
 	) : (
 		<ErrorPage

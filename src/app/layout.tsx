@@ -3,7 +3,7 @@
 import Cookies from "js-cookie";
 import "./globals.css";
 import { Inter } from "next/font/google";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/custom/Sidebar";
 import Footerbar from "@/components/custom/Footerbar";
 // fonts
@@ -12,8 +12,6 @@ const inter = Inter({ subsets: ["latin", "vietnamese"] });
 // toaster notifs
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/components/custom/AuthContext";
-import { useEffect, useState } from "react";
-import { User } from "@/lib/schema";
 
 export default function RootLayout({
 	children,
@@ -23,12 +21,13 @@ export default function RootLayout({
 	const cookies = Cookies.get("session") ?? "";
 	return (
 		<html>
-			<body className={`antialiased dark ${inter.className}`}>
-				<SidebarProvider open>
+			<body className={`antialiased ${inter.className}`}>
+				<SidebarProvider defaultOpen={true}>
 					<AuthProvider initialSession={cookies}>
 						<AppSidebar />
 						<div className='w-full h-screen'>
 							<main className='w-full min-h-screen'>
+								<SidebarTrigger />
 								{children}
 							</main>
 							<Footerbar />

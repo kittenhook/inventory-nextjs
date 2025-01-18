@@ -9,6 +9,7 @@ type loginData = { email: string; password: string };
 type registerData = { name: string; email: string; password: string };
 
 type AuthContextType = {
+	loadingAuth: boolean;
 	isAuthenticated: boolean;
 	user: User | null;
 	signOut: () => void;
@@ -25,10 +26,8 @@ export function AuthProvider({
 	children: React.ReactNode;
 	initialSession: string;
 }) {
-	const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
-		!!initialSession
-	);
 	const [user, setUser] = useState<User | null>(null);
+	const [loadingAuth, setLoadingAuth] = useState<boolean>(true);
 	const { toast } = useToast();
 
 	const signOut = async () => {
@@ -39,8 +38,8 @@ export function AuthProvider({
 			return 1;
 		}
 		Cookies.remove("session");
-		setIsAuthenticated(false);
 		setUser(null);
+		setLoadingAuth(false);
 	};
 
 	const signUp = async (registerData: registerData) => {
@@ -59,7 +58,7 @@ export function AuthProvider({
 		}
 		const responseData: User = await response.json();
 		setUser(responseData);
-		setIsAuthenticated(true);
+		setLoadingAuth(false);
 	};
 
 	const signIn = async (loginData: loginData) => {
@@ -78,26 +77,36 @@ export function AuthProvider({
 		}
 		const responseData: User = await response.json();
 		setUser(responseData);
-		setIsAuthenticated(true);
+		setLoadingAuth(false);
 	};
+
 	useEffect(() => {
 		(async () => {
+			// dont have to check if the session is present, already did this server-side, so this always run with minimal overhead
+			// TODO: fix this
 			const response = await fetch("/api/auth/authenticate");
 			if (!response.ok) {
 				setUser(null);
-				setIsAuthenticated(false);
+				setLoadingAuth(false);
 				return;
 			}
 			const responseData: User = await response.json();
 			setUser(responseData);
-			setIsAuthenticated(true);
+			setLoadingAuth(false);
 			return;
 		})();
-	}, []);
+	}, [initialSession]);
 
 	return (
 		<AuthContext.Provider
-			value={{ user, isAuthenticated, signUp, signOut, signIn }}
+			value={{
+				user,
+				isAuthenticated: !!user,
+				loadingAuth,
+				signUp,
+				signOut,
+				signIn,
+			}}
 		>
 			{children}
 		</AuthContext.Provider>

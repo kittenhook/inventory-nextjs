@@ -6,7 +6,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { LoaiGiong } from "@/lib/schema";
+import { Role, User } from "@/lib/schema";
 
 import {
 	Dialog,
@@ -14,13 +14,19 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-import TreeEditForm from "../forms/trees/treeEditForm";
 
 type pageProps = {
-	trees: LoaiGiong[];
+	users: User[];
+	roles: Role[];
 };
 
-export default function TreeTable(pageProps: pageProps) {
+export default function UserTable(pageProps: pageProps) {
+	function resolveRoleByUUID(uuid: string | null) {
+		if (!uuid) return "";
+		const role = pageProps.roles.find((role) => role.maDinhDanh == uuid);
+		if (!role) return "";
+		return role.ten;
+	}
 	return (
 		<Table>
 			{/* <TableCaption>A list of your recent invoices.</TableCaption> */}
@@ -33,18 +39,24 @@ export default function TreeTable(pageProps: pageProps) {
 				</TableRow>
 			</TableHeader>
 			<TableBody>
-				{pageProps.trees.map((tree) => {
+				{pageProps.users.map((user) => {
 					return (
-						<Dialog key={tree.maDinhDanh}>
+						<Dialog key={user.maDinhDanh}>
 							<DialogTrigger asChild>
 								<TableRow>
-									<TableCell>{tree.maDinhDanh}</TableCell>
-									<TableCell>{tree.ten}</TableCell>
+									<TableCell>{user.maDinhDanh}</TableCell>
+									<TableCell>{user.ten}</TableCell>
+									<TableCell>{user.email}</TableCell>
+									<TableCell>
+										{resolveRoleByUUID(
+											user.maDinhDanhQuyen
+										)}
+									</TableCell>
 								</TableRow>
 							</DialogTrigger>
 							<DialogContent>
 								<DialogTitle />
-								<TreeEditForm tree={tree} />
+								{/* <TreeEditForm tree={user} /> */}
 							</DialogContent>
 						</Dialog>
 					);

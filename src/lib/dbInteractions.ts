@@ -13,6 +13,9 @@ import {
 	cities,
 	districts,
 	LoaiGiong,
+	LoaiDongVat,
+	ThanhPho,
+	Quan,
 } from "./schema";
 
 import { eq } from "drizzle-orm";
@@ -62,6 +65,30 @@ export async function createNewAnimal(animalArguments: newLoaiDongVat) {
 		.values(animalArguments)
 		.returning();
 	return newAnimal;
+}
+export async function updateAnimal(animalArguments: LoaiDongVat) {
+	const animal = await retrieveAnimal({
+		maDinhDanh: animalArguments.maDinhDanh,
+	});
+	if (!animal) return null;
+	const updatedAnimalData = {
+		ten: animalArguments.ten || animal.ten,
+		moiTruongSong: animalArguments.moiTruongSong || animal.moiTruongSong,
+		viTriPhanBo: animalArguments.viTriPhanBo || animal.viTriPhanBo,
+		maDinhDanhLoaiBienDong:
+			animalArguments.maDinhDanhLoaiBienDong ||
+			animal.maDinhDanhLoaiBienDong,
+		maDinhDanhTinhTrangBaoTon:
+			animalArguments.maDinhDanhTinhTrangBaoTon ||
+			animal.maDinhDanhTinhTrangBaoTon,
+	};
+	const [updatedAnimal] = await db
+		.update(loaiDongVat)
+		.set(updatedAnimalData)
+		.where(eq(loaiDongVat.maDinhDanh, animalArguments.maDinhDanh))
+		.returning();
+	if (!updatedAnimal) return null;
+	return updatedAnimal;
 }
 
 export async function retrieveAllTrees() {
@@ -183,3 +210,31 @@ export async function retrieveCity(uuid: string) {
 		.where(eq(cities.maDinhDanh, uuid));
 	return city;
 }
+
+export async function createCity(cityArguments: Omit<ThanhPho, "maDinhDanh">) {
+	const cityData: ThanhPho = {
+		maDinhDanh: crypto.randomUUID(),
+		...cityArguments,
+	};
+	const [createdCity] = await db.insert(cities).values(cityData).returning();
+	if (!createdCity) return null;
+	return createdCity;
+}
+
+export async function createDistrict(
+	districtArguments: Omit<Quan, "maDinhDanh">
+) {
+	const districtData: Quan = {
+		maDinhDanh: crypto.randomUUID(),
+		...districtArguments,
+	};
+	const [createdDistrict] = await db
+		.insert(districts)
+		.values(districtData)
+		.returning();
+	if (!createdDistrict) return null;
+	return createdDistrict;
+}
+
+export async function updateDistrict() {}
+export async function updateCity() {}

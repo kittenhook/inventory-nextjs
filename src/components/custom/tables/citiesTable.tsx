@@ -2,7 +2,6 @@ import { ThanhPho } from "@/lib/schema";
 import {
 	Table,
 	TableBody,
-	TableCaption,
 	TableCell,
 	TableHead,
 	TableHeader,
@@ -11,11 +10,10 @@ import {
 import {
 	Dialog,
 	DialogContent,
-	DialogDescription,
-	DialogHeader,
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
+import CityEditForm from "../forms/c_and_d/cityEditForm";
 type pageProps = {
 	cities: ThanhPho[];
 };
@@ -26,7 +24,7 @@ export default function CitiesTable(pageProps: pageProps) {
 			{/* <TableCaption>A list of your recent invoices.</TableCaption> */}
 			<TableHeader>
 				<TableRow>
-					<TableHead>UUID</TableHead>
+					<TableHead className='max-w-[320px]'>UUID</TableHead>
 					<TableHead>Name</TableHead>
 				</TableRow>
 			</TableHeader>
@@ -42,7 +40,7 @@ export default function CitiesTable(pageProps: pageProps) {
 							</DialogTrigger>
 							<DialogContent>
 								<DialogTitle />
-								{/* <TreeEditForm tree={city} /> */}
+								<CityEditForm city={city} />
 							</DialogContent>
 						</Dialog>
 					);

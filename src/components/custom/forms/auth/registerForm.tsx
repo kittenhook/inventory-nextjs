@@ -40,7 +40,7 @@ export default function RegisterForm() {
 	const form = useForm<z.infer<typeof userLoginSchema>>({
 		resolver: zodResolver(userLoginSchema),
 		defaultValues: {
-			name: "",
+			ten: "",
 			email: "",
 			password: "",
 		},

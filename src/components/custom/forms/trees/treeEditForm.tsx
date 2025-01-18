@@ -24,7 +24,7 @@ type pageProps = {
 };
 
 const userLoginSchema = z.object({
-	name: z.string().min(1, {
+	ten: z.string().min(1, {
 		message: "A name must be provided",
 	}),
 });
@@ -36,20 +36,20 @@ export default function TreeEditForm(pageProps: pageProps) {
 	const form = useForm<z.infer<typeof userLoginSchema>>({
 		resolver: zodResolver(userLoginSchema),
 		defaultValues: {
-			name: pageProps.tree.ten,
+			ten: pageProps.tree.ten,
 		},
 	});
 	async function handleSubmission(values: z.infer<typeof userLoginSchema>) {
 		console.log(values);
 		const response = await fetch(
-			`/api/database/loaiGiong/Cay/${pageProps.tree.maDinhDanh}`,
+			`/api/database/trees/${pageProps.tree.maDinhDanh}`,
 			{
 				method: "PATCH",
 				headers: {
 					"Content-Type": "application/json",
 				},
 				body: JSON.stringify({
-					ten: values.name,
+					ten: values.ten,
 				}),
 			}
 		);
@@ -85,7 +85,7 @@ export default function TreeEditForm(pageProps: pageProps) {
 					<Input disabled placeholder={pageProps.tree.maDinhDanh} />
 					<FormField
 						control={form.control}
-						name='name'
+						name='ten'
 						render={({ field }) => (
 							<FormItem>
 								<FormLabel>Name</FormLabel>

@@ -8,14 +8,17 @@ type pageProps = {
 export default function ErrorPage(pageProps: pageProps) {
 	return (
 		<div className='w-full h-screen flex items-center justify-center'>
-			<Card className='w-[400px]'>
-				<CardHeader>
+			<Card className='w-[450px]'>
+				<CardHeader className='flex'>
 					<CircleX />
 					<span>An error has happened!</span>
 				</CardHeader>
 				<CardContent>
-					<pre>{pageProps.status_code || 500}</pre>
-					<pre>{pageProps.error_message || "Server-side error."}</pre>
+					<span className='font-extrabold'>
+						{pageProps.status_code}
+						<span className='text-muted-foreground'> - </span>
+						{pageProps.error_message}
+					</span>
 				</CardContent>
 			</Card>
 		</div>

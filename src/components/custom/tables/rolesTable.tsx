@@ -6,7 +6,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { LoaiGiong } from "@/lib/schema";
+import { Role } from "@/lib/schema";
 
 import {
 	Dialog,
@@ -14,13 +14,12 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-import TreeEditForm from "../forms/trees/treeEditForm";
 
 type pageProps = {
-	trees: LoaiGiong[];
+	roles: Role[];
 };
 
-export default function TreeTable(pageProps: pageProps) {
+export default function RoleTable(pageProps: pageProps) {
 	return (
 		<Table>
 			{/* <TableCaption>A list of your recent invoices.</TableCaption> */}
@@ -33,18 +32,18 @@ export default function TreeTable(pageProps: pageProps) {
 				</TableRow>
 			</TableHeader>
 			<TableBody>
-				{pageProps.trees.map((tree) => {
+				{pageProps.roles.map((role) => {
 					return (
-						<Dialog key={tree.maDinhDanh}>
+						<Dialog key={role.maDinhDanh}>
 							<DialogTrigger asChild>
 								<TableRow>
-									<TableCell>{tree.maDinhDanh}</TableCell>
-									<TableCell>{tree.ten}</TableCell>
+									<TableCell>{role.maDinhDanh}</TableCell>
+									<TableCell>{role.ten}</TableCell>
 								</TableRow>
 							</DialogTrigger>
 							<DialogContent>
 								<DialogTitle />
-								<TreeEditForm tree={tree} />
+								{/* <TreeEditForm tree={role} /> */}
 							</DialogContent>
 						</Dialog>
 					);

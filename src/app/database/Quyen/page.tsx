@@ -1,5 +1,4 @@
 "use client";
-import TreeTable from "@/components/custom/tables/treeTable";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -8,28 +7,28 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-import TreeCreateForm from "@/components/custom/forms/trees/treeCreateForm";
 import { useEffect, useState } from "react";
-import { LoaiGiong } from "@/lib/schema";
+import { Role } from "@/lib/schema";
 import { useAuth } from "@/components/custom/AuthContext";
 import ErrorPage from "@/components/custom/Error";
+import RoleTable from "@/components/custom/tables/rolesTable";
 
 export default function TreePage() {
-	const [trees, setTrees] = useState<LoaiGiong[]>([]);
+	const [roles, setRoles] = useState<Role[]>([]);
 	const [loading, setLoading] = useState(true);
 	const { isAuthenticated } = useAuth();
 	useEffect(() => {
 		if (!isAuthenticated) return;
 		(async () => {
-			const treesResponse = await fetch("/api/database/trees");
-			if (!treesResponse.ok) {
+			const rolesResponse = await fetch("/api/database/roles");
+			if (!rolesResponse.ok) {
 				return;
 			}
-			const trees = await treesResponse.json();
-			setTrees(trees);
+			const roles = await rolesResponse.json();
+			setRoles(roles);
 			setLoading(false);
 		})();
-	}, [isAuthenticated, loading]);
+	}, [isAuthenticated]);
 	if (loading) return <></>;
 	return isAuthenticated ? (
 		<div className='space-y-3 p-5'>
@@ -42,11 +41,11 @@ export default function TreePage() {
 					</DialogTrigger>
 					<DialogContent>
 						<DialogTitle />
-						<TreeCreateForm />
+						{/* <TreeCreateForm /> */}
 					</DialogContent>
 				</Dialog>
 			</div>
-			<TreeTable trees={trees} />
+			<RoleTable roles={roles} />
 		</div>
 	) : (
 		<ErrorPage

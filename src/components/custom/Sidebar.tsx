@@ -4,7 +4,8 @@ import {
 	TreePine,
 	TentTree,
 	ChevronUp,
-	User2,
+	UserRound,
+	UsersRound,
 	ChevronDown,
 	Columns3,
 	Database,
@@ -50,21 +51,13 @@ import LoginForm from "@/components/custom/forms/auth/loginForm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "../ui/separator";
 import RegisterForm from "./forms/auth/registerForm";
-import { User } from "@/lib/schema";
-import { useRouter } from "next/navigation";
-import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "./AuthContext";
-import { useState } from "react";
-
-type pageProps = {
-	user: User | null;
-};
 
 // Menu items.
 const databaseItems = [
 	{
 		title: "Animals",
-		url: "/database",
+		url: "/database/dongVat",
 		icon: Cat,
 	},
 	{
@@ -95,49 +88,38 @@ const siteItems = [
 		url: "/database/nguoiDung",
 		icon: Database,
 	},
+	{
+		title: "Roles",
+		url: "/database/Quyen",
+		icon: UsersRound,
+	},
 ];
 
 export default function AppSidebar() {
-	const { user, isAuthenticated } = useAuth();
+	const { isAuthenticated } = useAuth();
 	return (
 		<Sidebar>
 			<SidebarHeader>
-				<div className='flex items-center'>
+				<div className='flex items-center gap-1'>
 					<span className='leading-none text-3xl font-extrabold'>
-						HUST2024
+						ATC2
+					</span>
+					<span className='leading-none text-3xl font-extrabold'>
+						/
+					</span>
+					<span className='leading-none text-3xl font-extrabold'>
+						db
 					</span>
 				</div>
 			</SidebarHeader>
 			<SidebarContent>
-				<SidebarGroup>
-					<SidebarGroupLabel>Database</SidebarGroupLabel>
-					<SidebarGroupContent>
-						<SidebarMenu>
-							{databaseItems.map((item) => (
-								<SidebarMenuItem key={item.title}>
-									<SidebarMenuButton asChild>
-										<Link href={item.url}>
-											<item.icon />
-											<span>{item.title}</span>
-										</Link>
-									</SidebarMenuButton>
-								</SidebarMenuItem>
-							))}
-						</SidebarMenu>
-					</SidebarGroupContent>
-				</SidebarGroup>
-				<Collapsible className='group/collapsible'>
-					<SidebarGroup>
-						<SidebarGroupLabel asChild>
-							<CollapsibleTrigger>
-								Site Management
-								<ChevronDown className='ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180' />
-							</CollapsibleTrigger>
-						</SidebarGroupLabel>
-						<CollapsibleContent>
+				{isAuthenticated ? (
+					<>
+						<SidebarGroup>
+							<SidebarGroupLabel>Database</SidebarGroupLabel>
 							<SidebarGroupContent>
 								<SidebarMenu>
-									{siteItems.map((item) => (
+									{databaseItems.map((item) => (
 										<SidebarMenuItem key={item.title}>
 											<SidebarMenuButton asChild>
 												<Link href={item.url}>
@@ -149,9 +131,41 @@ export default function AppSidebar() {
 									))}
 								</SidebarMenu>
 							</SidebarGroupContent>
-						</CollapsibleContent>
-					</SidebarGroup>
-				</Collapsible>
+						</SidebarGroup>
+						<Collapsible className='group/collapsible'>
+							<SidebarGroup>
+								<SidebarGroupLabel asChild>
+									<CollapsibleTrigger>
+										Site Management
+										<ChevronDown className='ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180' />
+									</CollapsibleTrigger>
+								</SidebarGroupLabel>
+								<CollapsibleContent>
+									<SidebarGroupContent>
+										<SidebarMenu>
+											{siteItems.map((item) => (
+												<SidebarMenuItem
+													key={item.title}
+												>
+													<SidebarMenuButton asChild>
+														<Link href={item.url}>
+															<item.icon />
+															<span>
+																{item.title}
+															</span>
+														</Link>
+													</SidebarMenuButton>
+												</SidebarMenuItem>
+											))}
+										</SidebarMenu>
+									</SidebarGroupContent>
+								</CollapsibleContent>
+							</SidebarGroup>
+						</Collapsible>
+					</>
+				) : (
+					<></>
+				)}
 			</SidebarContent>
 			<AppSidebarFooter />
 		</Sidebar>
@@ -161,73 +175,71 @@ export default function AppSidebar() {
 function AppSidebarFooter() {
 	const { isAuthenticated, user, signOut } = useAuth();
 
-	if (!isAuthenticated || !user) {
-		return (
-			<SidebarFooter>
-				<SidebarMenu>
-					<SidebarMenuItem>
-						<DropdownMenu>
-							<DropdownMenuTrigger asChild>
-								<SidebarMenuButton>
-									<User2 />
-									<span>Unauthenticated</span>
-									<ChevronUp className='ml-auto' />
-								</SidebarMenuButton>
-							</DropdownMenuTrigger>
-							<DropdownMenuContent
-								side='top'
-								className='w-[--radix-popper-anchor-width]'
-							>
-								<Dialog>
-									<DialogTrigger asChild>
-										<DropdownMenuItem
-											onSelect={(e) => e.preventDefault()}
-										>
-											<LogIn />
-											<span>Authenticate</span>
-										</DropdownMenuItem>
-									</DialogTrigger>
-									<DialogContent>
-										<DialogTitle className='flex items-center'>
-											<User2 /> <span>Authenticate</span>
-										</DialogTitle>
-										<Tabs
-											defaultValue='login'
-											className='space-y-3'
-										>
-											<TabsList className=''>
-												<TabsTrigger value='login'>
-													Sign in
-												</TabsTrigger>
-												<TabsTrigger value='register'>
-													Sign up
-												</TabsTrigger>
-											</TabsList>
-											<Separator />
-											<TabsContent value='login'>
-												<LoginForm />
-											</TabsContent>
-											<TabsContent value='register'>
-												<RegisterForm />
-											</TabsContent>
-										</Tabs>
-									</DialogContent>
-								</Dialog>
-							</DropdownMenuContent>
-						</DropdownMenu>
-					</SidebarMenuItem>
-				</SidebarMenu>
-			</SidebarFooter>
-		);
-	}
-	return (
+	return !(isAuthenticated && user) ? (
 		<SidebarFooter>
 			<SidebarMenu>
 				<SidebarMenuItem>
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
 							<SidebarMenuButton>
-								<User2 />
+								<UserRound />
+								<span>Unauthenticated</span>
+								<ChevronUp className='ml-auto' />
+							</SidebarMenuButton>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent
+							side='top'
+							className='w-[--radix-popper-anchor-width]'
+						>
+							<Dialog>
+								<DialogTrigger asChild>
+									<DropdownMenuItem
+										onSelect={(e) => e.preventDefault()}
+									>
+										<LogIn />
+										<span>Authenticate</span>
+									</DropdownMenuItem>
+								</DialogTrigger>
+								<DialogContent>
+									<DialogTitle className='flex items-center'>
+										<UserRound />
+										<span>Authenticate</span>
+									</DialogTitle>
+									<Tabs
+										defaultValue='login'
+										className='space-y-3'
+									>
+										<TabsList className=''>
+											<TabsTrigger value='login'>
+												Sign in
+											</TabsTrigger>
+											<TabsTrigger value='register'>
+												Sign up
+											</TabsTrigger>
+										</TabsList>
+										<Separator />
+										<TabsContent value='login'>
+											<LoginForm />
+										</TabsContent>
+										<TabsContent value='register'>
+											<RegisterForm />
+										</TabsContent>
+									</Tabs>
+								</DialogContent>
+							</Dialog>
+						</DropdownMenuContent>
+					</DropdownMenu>
+				</SidebarMenuItem>
+			</SidebarMenu>
+		</SidebarFooter>
+	) : (
+		<SidebarFooter>
+			<SidebarMenu>
+				<SidebarMenuItem>
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<SidebarMenuButton>
+								<UserRound />
 								<span>{user.ten}</span>
 								<ChevronUp className='ml-auto' />
 							</SidebarMenuButton>

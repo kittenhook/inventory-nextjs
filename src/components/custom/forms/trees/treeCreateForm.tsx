@@ -15,11 +15,10 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/hooks/use-toast";
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 const newTreeSchema = z.object({
-	name: z.string().min(1, {
+	ten: z.string().min(1, {
 		message: "A name must be provided",
 	}),
 });
@@ -30,17 +29,17 @@ export default function TreeCreateForm() {
 	const form = useForm<z.infer<typeof newTreeSchema>>({
 		resolver: zodResolver(newTreeSchema),
 		defaultValues: {
-			name: "",
+			ten: "",
 		},
 	});
 	async function HandleSubmission(values: z.infer<typeof newTreeSchema>) {
-		const response = await fetch(`/api/database/loaiGiong/Cay/new`, {
+		const response = await fetch(`/api/database/trees/new`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify({
-				ten: values.name,
+				ten: values.ten,
 			}),
 		});
 		const date = new Date(Date.now());
@@ -73,7 +72,7 @@ export default function TreeCreateForm() {
 				>
 					<FormField
 						control={form.control}
-						name='name'
+						name='ten'
 						render={({ field }) => (
 							<FormItem>
 								<FormLabel>Name</FormLabel>

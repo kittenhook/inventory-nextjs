@@ -4,12 +4,8 @@ import { NextResponse } from "next/server";
 export async function GET() {
 	try {
 		const users = await retrieveAllUsers();
-		if (!users)
-			return NextResponse.json(
-				{ message: "No user found." },
-				{ status: 404 }
-			);
-		return NextResponse.json(users, { status: 200 });
+		if (!users) return new NextResponse(null, { status: 404 });
+		return NextResponse.json(users);
 	} catch (e) {
 		console.log(e);
 		return NextResponse.json(
