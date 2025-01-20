@@ -22,7 +22,10 @@ export async function POST(req: NextRequest) {
 			sameSite: "strict",
 			path: "/",
 		});
-		return NextResponse.json(user, { status: 200 });
+		return NextResponse.json(
+			{ user: user, isPrivileged: false },
+			{ status: 200 }
+		);
 	} catch (e) {
 		console.log(e);
 		return NextResponse.json(

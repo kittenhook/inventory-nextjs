@@ -3,16 +3,11 @@ import { LoaiGiong } from "@/lib/schema";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-	const { ten }: Omit<LoaiGiong, "maDinhDanh"> = await req.json();
-	if (!ten)
-		return NextResponse.json(
-			{ message: "empty field detected." },
-			{ status: 400 }
-		);
+	const body: Omit<LoaiGiong, "maDinhDanh"> = await req.json();
 	try {
 		const newTree = await createNewTree({
 			maDinhDanh: globalThis.crypto.randomUUID(),
-			ten: ten,
+			...body,
 		});
 		return NextResponse.json(newTree, { status: 200 });
 	} catch (e) {

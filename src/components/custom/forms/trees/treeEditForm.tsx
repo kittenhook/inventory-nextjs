@@ -16,16 +16,25 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoaiGiong } from "@/lib/schema";
 import { useToast } from "@/hooks/use-toast";
-import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 
 type pageProps = {
 	tree: LoaiGiong;
 };
 
-const userLoginSchema = z.object({
+const treeSchema = z.object({
 	ten: z.string().min(1, {
-		message: "A name must be provided",
+		message: "Phải điền tên giống cây trồng.",
+	}),
+	moiTruong: z
+		.string()
+		.min(1, { message: "Phải điền môi trường của giống cây trồng." }),
+	nangSuat: z.preprocess(
+		(a) => parseInt(z.string().parse(a), 10),
+		z.number()
+	),
+	tacDongMoiTruong: z.string().min(1, {
+		message: "Phải điền tác động môi trường của giống cây trồng.",
 	}),
 });
 
@@ -33,13 +42,30 @@ export default function TreeEditForm(pageProps: pageProps) {
 	const { toast } = useToast();
 	const router = useRouter();
 
-	const form = useForm<z.infer<typeof userLoginSchema>>({
-		resolver: zodResolver(userLoginSchema),
+	const form = useForm<z.infer<typeof treeSchema>>({
+		resolver: zodResolver(treeSchema),
 		defaultValues: {
 			ten: pageProps.tree.ten,
+			moiTruong: pageProps.tree.moiTruong,
+			nangSuat: pageProps.tree.nangSuat,
+			tacDongMoiTruong: pageProps.tree.tacDongMoiTruong,
 		},
 	});
-	async function handleSubmission(values: z.infer<typeof userLoginSchema>) {
+
+	async function deleteData() {
+		const response = await fetch(
+			`/api/database/trees/${pageProps.tree.maDinhDanh}`,
+			{
+				method: "DELETE",
+			}
+		);
+		if (!response.ok) {
+			toast({ title: "Không xóa được giống cây trồng" });
+			return;
+		}
+		toast({ title: "Đã xóa giống cây trồng." });
+	}
+	async function handleSubmission(values: z.infer<typeof treeSchema>) {
 		console.log(values);
 		const response = await fetch(
 			`/api/database/trees/${pageProps.tree.maDinhDanh}`,
@@ -58,13 +84,13 @@ export default function TreeEditForm(pageProps: pageProps) {
 		if (!response.ok) {
 			toast({
 				variant: "destructive",
-				title: "Failed to update tree's data.",
+				title: "Không cập nhật được giống cây trồng.",
 				description: `${date.toTimeString()}, ${date.toLocaleDateString()}`,
 			});
 			return;
 		}
 		toast({
-			title: "Updated tree's data.",
+			title: "Đã cập nhật giống cây trồng.",
 			description: `${date.toTimeString()}, ${date.toLocaleDateString()}`,
 		});
 		router.refresh();
@@ -73,7 +99,7 @@ export default function TreeEditForm(pageProps: pageProps) {
 	return (
 		<div className='space-y-3'>
 			<span className='text-2xl font-semibold tracking-tight'>
-				Update a tree.
+				Cập nhật giống cây trồng.
 			</span>
 			<Form {...form}>
 				<form
@@ -81,16 +107,60 @@ export default function TreeEditForm(pageProps: pageProps) {
 					className='space-y-3'
 					onSubmit={form.handleSubmit(handleSubmission)}
 				>
-					<Label>UUID</Label>
-					<Input disabled placeholder={pageProps.tree.maDinhDanh} />
 					<FormField
 						control={form.control}
 						name='ten'
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Name</FormLabel>
+								<FormLabel>Tên</FormLabel>
 								<FormControl>
-									<Input placeholder='Name' {...field} />
+									<Input placeholder='Cây bàng' {...field} />
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+					<FormField
+						control={form.control}
+						name='moiTruong'
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Môi trường</FormLabel>
+								<FormControl>
+									<Input placeholder='Rừng' {...field} />
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+					<FormField
+						control={form.control}
+						name='nangSuat'
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Năng suất (kg/m^2)</FormLabel>
+								<FormControl>
+									<Input
+										type='number'
+										placeholder='30'
+										{...field}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+					<FormField
+						control={form.control}
+						name='tacDongMoiTruong'
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Tác động môi trường</FormLabel>
+								<FormControl>
+									<Input
+										placeholder='Thải ra khí CO2, ...'
+										{...field}
+									/>
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -99,8 +169,12 @@ export default function TreeEditForm(pageProps: pageProps) {
 				</form>
 			</Form>
 			<div className='flex items-center justify-end gap-3'>
+				<Button variant='destructive' onClick={deleteData}>
+					Xóa
+				</Button>
+
 				<Button type='submit' form='treeEditForm'>
-					Update
+					Cập nhật
 				</Button>
 			</div>
 		</div>

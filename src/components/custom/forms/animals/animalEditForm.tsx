@@ -35,19 +35,19 @@ type pageProps = {
 
 const animalSchema = z.object({
 	ten: z.string().min(1, {
-		message: "A name must be provided",
+		message: "Phải điền tên loài động vật.",
 	}),
 	moiTruongSong: z.string().min(1, {
-		message: "A valid environment must be provided",
+		message: "Phải điền môi trường sống.",
 	}),
 	viTriPhanBo: z.string().min(1, {
-		message: "A valid region must be provided",
+		message: "Phải điền vị trí phân bổ.",
 	}),
 	maDinhDanhLoaiBienDong: z.string().min(1, {
-		message: "A valid difference must be provided",
+		message: "Phải chọn một loại biến động hợp lệ.",
 	}),
 	maDinhDanhTinhTrangBaoTon: z.string().min(1, {
-		message: "A valid preservation level must be provided.",
+		message: "Phải chọn một tình trạng bảo tồn hợp lệ.",
 	}),
 });
 
@@ -67,6 +67,28 @@ export default function AnimalEditForm(pageProps: pageProps) {
 				pageProps.animal.maDinhDanhTinhTrangBaoTon || "",
 		},
 	});
+
+	async function deleteData() {
+		const response = await fetch(
+			`/api/database/animals/${pageProps.animal.maDinhDanh}`,
+			{
+				method: "DELETE",
+			}
+		);
+		const date = new Date(Date.now());
+		if (!response.ok) {
+			toast({
+				variant: "destructive",
+				title: "Không xóa được loài động vật.",
+				description: `${date.toTimeString()}, ${date.toLocaleDateString()}`,
+			});
+			return;
+		}
+		toast({
+			title: "Đã xóa loài động vật.",
+			description: `${date.toTimeString()}, ${date.toLocaleDateString()}`,
+		});
+	}
 	async function handleSubmission(values: z.infer<typeof animalSchema>) {
 		console.log(values);
 		const response = await fetch(
@@ -84,13 +106,13 @@ export default function AnimalEditForm(pageProps: pageProps) {
 		if (!response.ok) {
 			toast({
 				variant: "destructive",
-				title: "Failed to update animal's data.",
+				title: "Không cập nhật được loài động vật.",
 				description: `${date.toTimeString()}, ${date.toLocaleDateString()}`,
 			});
 			return;
 		}
 		toast({
-			title: "Updated animal's data.",
+			title: "Đã cập nhật loài động vật.",
 			description: `${date.toTimeString()}, ${date.toLocaleDateString()}`,
 		});
 		router.refresh();
@@ -107,16 +129,14 @@ export default function AnimalEditForm(pageProps: pageProps) {
 					className='space-y-3'
 					onSubmit={form.handleSubmit(handleSubmission)}
 				>
-					<Label>UUID</Label>
-					<Input disabled placeholder={pageProps.animal.maDinhDanh} />
 					<FormField
 						control={form.control}
 						name='ten'
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Name</FormLabel>
+								<FormLabel>Tên</FormLabel>
 								<FormControl>
-									<Input placeholder='Name' {...field} />
+									<Input placeholder='Lợn rừng' {...field} />
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -127,9 +147,9 @@ export default function AnimalEditForm(pageProps: pageProps) {
 						name='moiTruongSong'
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Moi truong song</FormLabel>
+								<FormLabel>Môi trường sống</FormLabel>
 								<FormControl>
-									<Input {...field} />
+									<Input placeholder='Tự nhiên' {...field} />
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -140,9 +160,9 @@ export default function AnimalEditForm(pageProps: pageProps) {
 						name='viTriPhanBo'
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Vi tri phan bo</FormLabel>
+								<FormLabel>Vị trí phân bổ</FormLabel>
 								<FormControl>
-									<Input {...field} />
+									<Input placeholder='Đồng bằng' {...field} />
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -153,14 +173,14 @@ export default function AnimalEditForm(pageProps: pageProps) {
 						name='maDinhDanhLoaiBienDong'
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Loai bien dong</FormLabel>
+								<FormLabel>Loại biến động</FormLabel>
 								<Select
 									onValueChange={field.onChange}
 									defaultValue={field.value}
 								>
 									<FormControl>
 										<SelectTrigger>
-											<SelectValue />
+											<SelectValue placeholder='Chọn một loại biến động' />
 										</SelectTrigger>
 									</FormControl>
 									<SelectContent>
@@ -180,10 +200,46 @@ export default function AnimalEditForm(pageProps: pageProps) {
 							</FormItem>
 						)}
 					/>
+					<FormField
+						control={form.control}
+						name='maDinhDanhTinhTrangBaoTon'
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Tình trạng bảo tồn</FormLabel>
+								<Select
+									onValueChange={field.onChange}
+									defaultValue={field.value}
+								>
+									<FormControl>
+										<SelectTrigger>
+											<SelectValue placeholder='Chọn một tình trạng bảo tồn' />
+										</SelectTrigger>
+									</FormControl>
+									<SelectContent>
+										{pageProps.TinhTrangBaoTon.map(
+											(ttbt) => {
+												return (
+													<SelectItem
+														key={ttbt.maDinhDanh}
+														value={ttbt.maDinhDanh}
+													>
+														{ttbt.ten}
+													</SelectItem>
+												);
+											}
+										)}
+									</SelectContent>
+								</Select>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
 				</form>
 			</Form>
 			<div className='flex items-center justify-between gap-3 mx-2'>
-				<Button variant='destructive'>Delete</Button>
+				<Button variant='destructive' onClick={deleteData}>
+					Delete
+				</Button>
 				<Button type='submit' form='treeEditForm'>
 					Update
 				</Button>

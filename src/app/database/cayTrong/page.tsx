@@ -17,7 +17,7 @@ import ErrorPage from "@/components/custom/Error";
 export default function TreePage() {
 	const [trees, setTrees] = useState<LoaiGiong[]>([]);
 	const [loading, setLoading] = useState(true);
-	const { isAuthenticated } = useAuth();
+	const { isAuthenticated, isPrivileged } = useAuth();
 	useEffect(() => {
 		if (!isAuthenticated) return;
 		(async () => {
@@ -33,18 +33,24 @@ export default function TreePage() {
 	if (loading) return <></>;
 	return isAuthenticated ? (
 		<div className='space-y-3 p-5'>
-			<span className='text-3xl font-extrabold'>Tree database</span>
+			<span className='text-3xl font-extrabold'>
+				Cơ sở dữ liệu: Giống cây trồng
+			</span>
 			<Separator />
 			<div className='w-full flex justify-end'>
-				<Dialog>
-					<DialogTrigger asChild>
-						<Button>Add a record!</Button>
-					</DialogTrigger>
-					<DialogContent>
-						<DialogTitle />
-						<TreeCreateForm />
-					</DialogContent>
-				</Dialog>
+				{isPrivileged ? (
+					<Dialog>
+						<DialogTrigger asChild>
+							<Button>Thêm</Button>
+						</DialogTrigger>
+						<DialogContent>
+							<DialogTitle />
+							<TreeCreateForm />
+						</DialogContent>
+					</Dialog>
+				) : (
+					<></>
+				)}
 			</div>
 			<TreeTable trees={trees} />
 		</div>

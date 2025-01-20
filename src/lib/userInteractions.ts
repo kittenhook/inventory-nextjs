@@ -10,6 +10,7 @@ import {
 	roles,
 	newRole,
 	User,
+	Role,
 } from "./schema";
 import { hash } from "argon2";
 
@@ -55,23 +56,10 @@ export async function retrieveUser(userArguments: {
 	return user;
 }
 
-export async function updateUser(userArguments: {
-	maDinhDanh: string;
-	name?: string;
-	email?: string;
-	maDinhDanhQuyen?: string;
-}): Promise<User | null> {
-	const user = await retrieveUser({ maDinhDanh: userArguments.maDinhDanh });
-	if (!user) return null;
-	const values: NewUser = {
-		maDinhDanh: user.maDinhDanh,
-		ten: userArguments.name ?? user.ten,
-		email: userArguments.email ?? user.email,
-		maDinhDanhQuyen: userArguments.maDinhDanhQuyen ?? user.maDinhDanhQuyen,
-	};
+export async function updateUser(userArguments: User) {
 	const [updatedUser] = await db
 		.update(users)
-		.set(values)
+		.set(userArguments)
 		.where(eq(users.maDinhDanh, userArguments.maDinhDanh))
 		.returning();
 	return updatedUser;
@@ -153,14 +141,20 @@ export async function retrieveUserRole(roleArgument: { uuid: string }) {
 	return role;
 }
 
-export async function createUserRole(roleArgument: { ten: string }) {
-	if (!roleArgument.ten) return null;
-	const roleData: newRole = {
-		maDinhDanh: globalThis.crypto.randomUUID(),
-		ten: roleArgument.ten,
-	};
-	const [newRole] = await db.insert(roles).values(roleData).returning();
+export async function createUserRole(roleArgument: Role) {
+	if (!roleArgument) return null;
+	const [newRole] = await db.insert(roles).values(roleArgument).returning();
 	return newRole;
+}
+
+export async function updateUserRole(roleArguments: Role) {
+	const [updatedRole] = await db
+		.update(roles)
+		.set(roleArguments)
+		.where(eq(roles.maDinhDanh, roleArguments.maDinhDanh))
+		.returning();
+	if (!updatedRole) return null;
+	return updatedRole;
 }
 
 export async function retrieveUserSessionBySession(tokenArguments: {
@@ -177,4 +171,16 @@ export async function retrieveUserSessionBySession(tokenArguments: {
 		.where(eq(users.maDinhDanh, session.maDinhDanhNguoiDung));
 	if (!user) return null;
 	return user;
+}
+
+export async function roleAuthenticate(userArguments: {
+	role_uuid: string | null;
+}): Promise<boolean> {
+	if (!userArguments.role_uuid) return false;
+	const [role] = await db
+		.select()
+		.from(roles)
+		.where(eq(roles.maDinhDanh, userArguments.role_uuid));
+	if (!role || role.isPrivileged == false) return false;
+	return true;
 }

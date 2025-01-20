@@ -22,7 +22,7 @@ export default function UserPage() {
 		roles: [],
 	});
 	const [loading, setLoading] = useState(true);
-	const { isAuthenticated } = useAuth();
+	const { isAuthenticated, isPrivileged } = useAuth();
 	useEffect(() => {
 		if (!isAuthenticated) return;
 		(async () => {
@@ -40,21 +40,13 @@ export default function UserPage() {
 		})();
 	}, [isAuthenticated, loading]);
 	if (loading) return <></>;
-	return isAuthenticated ? (
+	return isAuthenticated && isPrivileged ? (
 		<div className='space-y-3 p-5'>
-			<span className='text-3xl font-extrabold'>Tree database</span>
+			<span className='text-3xl font-extrabold'>
+				Cơ sở dữ liệu: Người dùng
+			</span>
 			<Separator />
-			<div className='w-full flex justify-end'>
-				<Dialog>
-					<DialogTrigger asChild>
-						<Button>Add a record!</Button>
-					</DialogTrigger>
-					<DialogContent>
-						<DialogTitle />
-						{/* <TreeCreateForm /> */}
-					</DialogContent>
-				</Dialog>
-			</div>
+			<div className='w-full flex justify-end'></div>
 			<UserTable users={data.users} roles={data.roles} />
 		</div>
 	) : (

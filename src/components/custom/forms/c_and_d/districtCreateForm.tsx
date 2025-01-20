@@ -31,10 +31,10 @@ type pageProps = {
 
 const newDistrictSchema = z.object({
 	ten: z.string().min(1, {
-		message: "A name must be provided",
+		message: "Phải điền tên quận.",
 	}),
 	maDinhDanhThanhPho: z.string().min(1, {
-		message: "A valid city must be provided.",
+		message: "Phải chọn một thành phố hợp lệ.",
 	}),
 });
 
@@ -52,7 +52,7 @@ export default function DistrictCreateForm(pageProps: pageProps) {
 	async function handleSubmission(values: z.infer<typeof newDistrictSchema>) {
 		console.log(values);
 		const response = await fetch(`/api/database/districts/new`, {
-			method: "PATCH",
+			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
 			},
@@ -65,13 +65,13 @@ export default function DistrictCreateForm(pageProps: pageProps) {
 		if (!response.ok) {
 			toast({
 				variant: "destructive",
-				title: "Failed to create district.",
+				title: "Không thêm được quận.",
 				description: `${date.toTimeString()}, ${date.toLocaleDateString()}`,
 			});
 			return;
 		}
 		toast({
-			title: "Created district.",
+			title: "Đã thêm quận.",
 			description: `${date.toTimeString()}, ${date.toLocaleDateString()}`,
 		});
 		router.refresh();
@@ -80,7 +80,7 @@ export default function DistrictCreateForm(pageProps: pageProps) {
 	return (
 		<div className='space-y-3'>
 			<span className='text-2xl font-semibold tracking-tight'>
-				Create a district.
+				Thêm quận mới.
 			</span>
 			<Form {...form}>
 				<form
@@ -93,9 +93,9 @@ export default function DistrictCreateForm(pageProps: pageProps) {
 						name='ten'
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Name</FormLabel>
+								<FormLabel>Tên</FormLabel>
 								<FormControl>
-									<Input placeholder='Name' {...field} />
+									<Input placeholder='Hoàn Kiếm' {...field} />
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -106,12 +106,12 @@ export default function DistrictCreateForm(pageProps: pageProps) {
 						name='maDinhDanhThanhPho'
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>City</FormLabel>
+								<FormLabel>Thành phố</FormLabel>
 
 								<Select onValueChange={field.onChange}>
 									<FormControl>
 										<SelectTrigger>
-											<SelectValue placeholder='Choose a city' />
+											<SelectValue placeholder='Chọn một thành phố' />
 										</SelectTrigger>
 									</FormControl>
 									<SelectContent>
@@ -135,7 +135,7 @@ export default function DistrictCreateForm(pageProps: pageProps) {
 			</Form>
 			<div className='flex items-center justify-end gap-3'>
 				<Button type='submit' form='cityEditForm'>
-					Create
+					Thêm
 				</Button>
 			</div>
 		</div>

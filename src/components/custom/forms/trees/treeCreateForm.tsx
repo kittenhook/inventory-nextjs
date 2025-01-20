@@ -19,7 +19,17 @@ import { useRouter } from "next/navigation";
 
 const newTreeSchema = z.object({
 	ten: z.string().min(1, {
-		message: "A name must be provided",
+		message: "Phải điền tên giống cây trồng.",
+	}),
+	moiTruong: z
+		.string()
+		.min(1, { message: "Phải điền môi trường của giống cây trồng." }),
+	nangSuat: z.preprocess(
+		(a) => parseInt(z.string().parse(a), 10),
+		z.number()
+	),
+	tacDongMoiTruong: z.string().min(1, {
+		message: "Phải điền tác động môi trường của giống cây trồng.",
 	}),
 });
 
@@ -30,6 +40,9 @@ export default function TreeCreateForm() {
 		resolver: zodResolver(newTreeSchema),
 		defaultValues: {
 			ten: "",
+			moiTruong: "",
+			nangSuat: 0,
+			tacDongMoiTruong: "",
 		},
 	});
 	async function HandleSubmission(values: z.infer<typeof newTreeSchema>) {
@@ -38,22 +51,20 @@ export default function TreeCreateForm() {
 			headers: {
 				"Content-Type": "application/json",
 			},
-			body: JSON.stringify({
-				ten: values.ten,
-			}),
+			body: JSON.stringify({ ...values }),
 		});
 		const date = new Date(Date.now());
 
 		if (!response.ok) {
 			toast({
 				variant: "destructive",
-				title: "Failed to create tree.",
+				title: "Không thêm được giống cây trồng.",
 				description: `${date.toTimeString()}, ${date.toLocaleDateString()}`,
 			});
 			return;
 		}
 		toast({
-			title: "Created tree.",
+			title: "Đã thêm giống cây trồng.",
 			description: `${date.toTimeString()}, ${date.toLocaleDateString()}`,
 		});
 		router.refresh();
@@ -62,7 +73,7 @@ export default function TreeCreateForm() {
 	return (
 		<div className='space-y-3'>
 			<span className='text-2xl font-semibold tracking-tight'>
-				Create new tree.
+				Thêm giống cây trồng mới.
 			</span>
 			<Form {...form}>
 				<form
@@ -75,9 +86,55 @@ export default function TreeCreateForm() {
 						name='ten'
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Name</FormLabel>
+								<FormLabel>Tên</FormLabel>
 								<FormControl>
-									<Input placeholder='Name' {...field} />
+									<Input placeholder='Cây bàng' {...field} />
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+					<FormField
+						control={form.control}
+						name='moiTruong'
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Môi trường</FormLabel>
+								<FormControl>
+									<Input placeholder='Rừng' {...field} />
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+					<FormField
+						control={form.control}
+						name='nangSuat'
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Năng suất (kg/m^2)</FormLabel>
+								<FormControl>
+									<Input
+										type='number'
+										placeholder='30'
+										{...field}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+					<FormField
+						control={form.control}
+						name='tacDongMoiTruong'
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Tác động môi trường</FormLabel>
+								<FormControl>
+									<Input
+										placeholder='Thải ra khí CO2, ...'
+										{...field}
+									/>
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -87,7 +144,7 @@ export default function TreeCreateForm() {
 			</Form>
 			<div className='flex items-center justify-end gap-3'>
 				<Button type='submit' form='treeEditForm'>
-					Create
+					Thêm
 				</Button>
 			</div>
 		</div>

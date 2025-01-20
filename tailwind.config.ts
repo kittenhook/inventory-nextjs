@@ -11,6 +11,13 @@ export default {
 	theme: {
 		extend: {
 			colors: {
+				jungle: {
+					"100": "#60eb3d",
+					"200": "#42b325",
+					"300": "#397d28",
+					"400": "#26531a",
+					"500": "#12280d",
+				},
 				background: "hsl(var(--background))",
 				foreground: "hsl(var(--foreground))",
 				card: {

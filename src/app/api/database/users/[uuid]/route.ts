@@ -1,76 +1,42 @@
-import { deleteUser, retrieveUser, updateUser } from "@/lib/userInteractions";
 import { NextRequest, NextResponse } from "next/server";
+import { keys, sessions, User, users } from "@/lib/schema";
+import { updateUser } from "@/lib/userInteractions";
+import { db } from "@/lib/db";
+import { eq } from "drizzle-orm";
 
-/**
- * * PARAMS = SLUGS
- * * REQ.JSON() = REQUEST BODY
- */
-
-type UpdateBody = {
-	maDinhDanh: string;
-	ten?: string;
-	email?: string;
-	maDinhDanhQuyen?: string;
-};
-
-type Parameters = {
-	uuid: string;
-};
-
-export async function GET(
+export async function PATCH(
 	req: NextRequest,
-	{ params }: { params: Promise<Parameters> }
+	{ params }: { params: Promise<{ uuid: string }> }
 ) {
-	try {
-		let statusCode = 200;
-		const uuid = (await params).uuid;
-		const user = await retrieveUser({ maDinhDanh: uuid });
-		if (!user) {
-			statusCode = 404;
-		}
-		return NextResponse.json({ user: user }, { status: statusCode });
-	} catch (e) {
-		console.log(e);
-		return NextResponse.json(
-			{ message: "server-side error" },
-			{ status: 500 }
-		);
-	}
+	const uuid = (await params).uuid;
+	const body: Omit<User, "maDinhDanh"> = await req.json();
+	const updatedRUser = await updateUser({
+		maDinhDanh: uuid,
+		...body,
+	});
+	if (!updatedRUser) return new NextResponse(null, { status: 400 });
+	return NextResponse.json(updatedRUser);
 }
 
 export async function DELETE(
 	req: NextRequest,
-	{ params }: { params: Promise<Parameters> }
+	{ params }: { params: Promise<{ uuid: string }> }
 ) {
 	const uuid = (await params).uuid;
-	const user = await deleteUser({ maDinhDanh: uuid });
-	return NextResponse.json(user);
-}
-
-export async function PATCH(
-	req: NextRequest,
-	{ params }: { params: Promise<Parameters> }
-) {
-	try {
-		const body = await params;
-		const updateParameters: UpdateBody = await req.json();
-		const updateBody: UpdateBody = {
-			maDinhDanh: body.uuid,
-			ten: updateParameters.ten,
-			email: updateParameters.email,
-			maDinhDanhQuyen: updateParameters.maDinhDanhQuyen,
-		};
-		const updatedUser = await updateUser(updateBody);
-		return NextResponse.json(updatedUser);
-	} catch (e) {
-		console.log(e);
-		return NextResponse.json(
-			{
-				message: "There was a problem updating the specified user.",
-			},
-			{
-				status: 500,
-			}
-		);
-	}
+	if (!uuid) return new NextResponse(null, { status: 400 });
+	const [deletedKey] = await db
+		.delete(keys)
+		.where(eq(keys.maDinhDanhNguoiDung, uuid))
+		.returning();
+	const [deletedSession] = await db
+		.delete(sessions)
+		.where(eq(sessions.maDinhDanhNguoiDung, uuid))
+		.returning();
+	const [deletedRole] = await db
+		.delete(users)
+		.where(eq(users.maDinhDanh, uuid))
+		.returning();
+	if (!deletedKey && !deletedRole && !deletedSession)
+		return new NextResponse(null, { status: 500 });
+	return new NextResponse(null);
 }

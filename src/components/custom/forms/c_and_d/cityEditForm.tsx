@@ -25,7 +25,7 @@ type pageProps = {
 
 const citySchema = z.object({
 	name: z.string().min(1, {
-		message: "A name must be provided",
+		message: "Phải điền tên thành phố.",
 	}),
 });
 
@@ -36,9 +36,23 @@ export default function CityEditForm(pageProps: pageProps) {
 	const form = useForm<z.infer<typeof citySchema>>({
 		resolver: zodResolver(citySchema),
 		defaultValues: {
-			ten: pageProps.city.ten,
+			name: pageProps.city.ten,
 		},
 	});
+	async function deleteData() {
+		const response = await fetch(
+			`/api/database/cities/${pageProps.city.maDinhDanh}`,
+			{
+				method: "DELETE",
+			}
+		);
+		if (!response.ok) {
+			toast({ title: "Không xóa được thành phố." });
+			return;
+		}
+		toast({ title: "Đã xóa thành phố." });
+	}
+
 	async function handleSubmission(values: z.infer<typeof citySchema>) {
 		console.log(values);
 		const response = await fetch(
@@ -58,13 +72,13 @@ export default function CityEditForm(pageProps: pageProps) {
 		if (!response.ok) {
 			toast({
 				variant: "destructive",
-				title: "Failed to update city's data.",
+				title: "Không cập nhật được thành phố.",
 				description: `${date.toTimeString()}, ${date.toLocaleDateString()}`,
 			});
 			return;
 		}
 		toast({
-			title: "Updated city's data.",
+			title: "Đã cập nhật thành phố.",
 			description: `${date.toTimeString()}, ${date.toLocaleDateString()}`,
 		});
 		router.refresh();
@@ -73,7 +87,7 @@ export default function CityEditForm(pageProps: pageProps) {
 	return (
 		<div className='space-y-3'>
 			<span className='text-2xl font-semibold tracking-tight'>
-				Update a city.
+				Cập nhật thành phố.
 			</span>
 			<Form {...form}>
 				<form
@@ -88,9 +102,9 @@ export default function CityEditForm(pageProps: pageProps) {
 						name='name'
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Name</FormLabel>
+								<FormLabel>Tên</FormLabel>
 								<FormControl>
-									<Input placeholder='Name' {...field} />
+									<Input placeholder='Hanoi' {...field} />
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -99,8 +113,12 @@ export default function CityEditForm(pageProps: pageProps) {
 				</form>
 			</Form>
 			<div className='flex items-center justify-end gap-3'>
+				<Button variant='destructive' onClick={deleteData}>
+					Xóa
+				</Button>
+
 				<Button type='submit' form='cityEditForm'>
-					Update
+					Cập nhật
 				</Button>
 			</div>
 		</div>

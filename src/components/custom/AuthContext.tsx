@@ -1,7 +1,7 @@
 "use client";
 
 import { useToast } from "@/hooks/use-toast";
-import { Session, User } from "@/lib/schema";
+import { Role, User } from "@/lib/schema";
 import Cookies from "js-cookie";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
@@ -11,6 +11,7 @@ type registerData = { name: string; email: string; password: string };
 type AuthContextType = {
 	loadingAuth: boolean;
 	isAuthenticated: boolean;
+	isPrivileged: boolean;
 	user: User | null;
 	signOut: () => void;
 	signIn: (loginData: loginData) => void;
@@ -27,6 +28,7 @@ export function AuthProvider({
 	initialSession: string;
 }) {
 	const [user, setUser] = useState<User | null>(null);
+	const [isPrivileged, setIsPrivileged] = useState<boolean>(false);
 	const [loadingAuth, setLoadingAuth] = useState<boolean>(true);
 	const { toast } = useToast();
 
@@ -51,13 +53,15 @@ export function AuthProvider({
 		if (!response.ok) {
 			toast({
 				variant: "destructive",
-				title: "Failed to sign in.",
+				title: "Failed to sign up.",
 				description: `${date.toTimeString()}, ${date.toLocaleDateString()}`,
 			});
 			return;
 		}
-		const responseData: User = await response.json();
-		setUser(responseData);
+		const responseData: { user: User; isPrivileged: boolean } =
+			await response.json();
+		setUser(responseData.user);
+		setIsPrivileged(responseData.isPrivileged);
 		setLoadingAuth(false);
 	};
 
@@ -75,8 +79,10 @@ export function AuthProvider({
 			});
 			return;
 		}
-		const responseData: User = await response.json();
-		setUser(responseData);
+		const responseData: { user: User; isPrivileged: boolean } =
+			await response.json();
+		setUser(responseData.user);
+		setIsPrivileged(responseData.isPrivileged);
 		setLoadingAuth(false);
 	};
 
@@ -90,8 +96,10 @@ export function AuthProvider({
 				setLoadingAuth(false);
 				return;
 			}
-			const responseData: User = await response.json();
-			setUser(responseData);
+			const responseData: { user: User; isPrivileged: boolean } =
+				await response.json();
+			setUser(responseData.user);
+			setIsPrivileged(responseData.isPrivileged);
 			setLoadingAuth(false);
 			return;
 		})();
@@ -106,6 +114,7 @@ export function AuthProvider({
 				signUp,
 				signOut,
 				signIn,
+				isPrivileged,
 			}}
 		>
 			{children}

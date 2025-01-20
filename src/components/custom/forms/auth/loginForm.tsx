@@ -38,29 +38,6 @@ export default function LoginForm() {
 			password: "",
 		},
 	});
-	// async function handleSubmission(values: z.infer<typeof userLoginSchema>) {
-	// 	const response = await fetch("/api/auth/login", {
-	// 		method: "POST",
-	// 		headers: {
-	// 			"Content-Type": "application/json",
-	// 		},
-	// 		body: JSON.stringify({
-	// 			email: values.email,
-	// 			password: values.password,
-	// 		}),
-	// 	});
-
-	// 	const date = new Date(Date.now());
-	// 	if (!response.ok) {
-	// 		toast({
-	// 			variant: "destructive",
-	// 			title: "Failed to sign in.",
-	// 			description: `${date.toTimeString()}, ${date.toLocaleDateString()}`,
-	// 		});
-	// 		return;
-	// 	}
-	// 	router.refresh();
-	// }
 
 	return (
 		<div className='space-y-3'>

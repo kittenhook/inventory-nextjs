@@ -21,7 +21,7 @@ export default function RootLayout({
 	const cookies = Cookies.get("session") ?? "";
 	return (
 		<html>
-			<body className={`antialiased ${inter.className}`}>
+			<body className={`antialiased ${inter.className} dark bg-cover`}>
 				<SidebarProvider defaultOpen={true}>
 					<AuthProvider initialSession={cookies}>
 						<AppSidebar />

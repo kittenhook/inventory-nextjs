@@ -31,19 +31,19 @@ type pageProps = {
 
 const newAnimalSchema = z.object({
 	ten: z.string().min(1, {
-		message: "A name must be provided",
+		message: "Phải điền tên loài động vật.",
 	}),
 	moiTruongSong: z.string().min(1, {
-		message: "A valid environment must be provided",
+		message: "Phải điền môi trường sống.",
 	}),
 	viTriPhanBo: z.string().min(1, {
-		message: "A valid region must be provided",
+		message: "Phải điền vị trí phân bổ.",
 	}),
 	maDinhDanhLoaiBienDong: z.string().min(1, {
-		message: "A valid difference must be provided",
+		message: "Phải chọn một loại biến động hợp lệ.",
 	}),
 	maDinhDanhTinhTrangBaoTon: z.string().min(1, {
-		message: "A valid preservation level must be provided.",
+		message: "Phải chọn một tình trạng bảo tồn hợp lệ.",
 	}),
 });
 
@@ -61,7 +61,7 @@ export default function TreeCreateForm(pageProps: pageProps) {
 		},
 	});
 	async function handleSubmission(values: z.infer<typeof newAnimalSchema>) {
-		const response = await fetch(`/api/database/trees/new`, {
+		const response = await fetch(`/api/database/animals/new`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
@@ -75,13 +75,13 @@ export default function TreeCreateForm(pageProps: pageProps) {
 		if (!response.ok) {
 			toast({
 				variant: "destructive",
-				title: "Failed to create animal.",
+				title: "Không thêm được loài động vật.",
 				description: `${date.toTimeString()}, ${date.toLocaleDateString()}`,
 			});
 			return;
 		}
 		toast({
-			title: "Created animal.",
+			title: "Đã thêm loài động vật.",
 			description: `${date.toTimeString()}, ${date.toLocaleDateString()}`,
 		});
 		router.refresh();
@@ -90,7 +90,7 @@ export default function TreeCreateForm(pageProps: pageProps) {
 	return (
 		<div className='space-y-3'>
 			<span className='text-2xl font-semibold tracking-tight'>
-				Create new tree.
+				Thêm loài động vật mới.
 			</span>
 			<Form {...form}>
 				<form
@@ -103,9 +103,9 @@ export default function TreeCreateForm(pageProps: pageProps) {
 						name='ten'
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Name</FormLabel>
+								<FormLabel>Tên</FormLabel>
 								<FormControl>
-									<Input placeholder='Name' {...field} />
+									<Input placeholder='Lợn rừng' {...field} />
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -116,9 +116,9 @@ export default function TreeCreateForm(pageProps: pageProps) {
 						name='moiTruongSong'
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Moi truong song</FormLabel>
+								<FormLabel>Môi trường sống</FormLabel>
 								<FormControl>
-									<Input {...field} />
+									<Input placeholder='Tự nhiên' {...field} />
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -129,9 +129,9 @@ export default function TreeCreateForm(pageProps: pageProps) {
 						name='viTriPhanBo'
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Vi tri phan bo</FormLabel>
+								<FormLabel>Vị trí phân bổ</FormLabel>
 								<FormControl>
-									<Input {...field} />
+									<Input placeholder='Đồng bằng' {...field} />
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -142,14 +142,14 @@ export default function TreeCreateForm(pageProps: pageProps) {
 						name='maDinhDanhLoaiBienDong'
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Loai bien dong</FormLabel>
+								<FormLabel>Loại biến động</FormLabel>
 								<Select
 									onValueChange={field.onChange}
 									defaultValue={field.value}
 								>
 									<FormControl>
 										<SelectTrigger>
-											<SelectValue />
+											<SelectValue placeholder='Chọn một loại biến động' />
 										</SelectTrigger>
 									</FormControl>
 									<SelectContent>
@@ -174,14 +174,14 @@ export default function TreeCreateForm(pageProps: pageProps) {
 						name='maDinhDanhTinhTrangBaoTon'
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Tinh trang bao ton</FormLabel>
+								<FormLabel>Tình trạng bảo tồn</FormLabel>
 								<Select
 									onValueChange={field.onChange}
 									defaultValue={field.value}
 								>
 									<FormControl>
 										<SelectTrigger>
-											<SelectValue />
+											<SelectValue placeholder='Chọn một tình trạng bảo tồn' />
 										</SelectTrigger>
 									</FormControl>
 									<SelectContent>
@@ -205,7 +205,7 @@ export default function TreeCreateForm(pageProps: pageProps) {
 			</Form>
 			<div className='flex items-center justify-end gap-3'>
 				<Button type='submit' form='treeEditForm'>
-					Create
+					Thêm
 				</Button>
 			</div>
 		</div>

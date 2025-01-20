@@ -1,5 +1,9 @@
 import { cookies } from "next/headers";
-import { createUserSession, retrieveUsersKey } from "@/lib/userInteractions";
+import {
+	createUserSession,
+	retrieveUsersKey,
+	roleAuthenticate,
+} from "@/lib/userInteractions";
 import { NextRequest, NextResponse } from "next/server";
 import { verify } from "argon2";
 
@@ -21,6 +25,9 @@ export async function POST(req: NextRequest) {
 		const session = await createUserSession({
 			maDinhDanhNguoiDung: userkey.user.maDinhDanh,
 		});
+		const isPrivileged = await roleAuthenticate({
+			role_uuid: userkey.user.maDinhDanhQuyen,
+		});
 
 		(await cookies()).set("session", session.token, {
 			httpOnly: true,
@@ -29,7 +36,10 @@ export async function POST(req: NextRequest) {
 			path: "/",
 		});
 
-		return NextResponse.json(userkey.user, { status: 200 });
+		return NextResponse.json(
+			{ user: userkey.user, isPrivileged: isPrivileged },
+			{ status: 200 }
+		);
 	} catch (e) {
 		console.log(e);
 		return NextResponse.json(

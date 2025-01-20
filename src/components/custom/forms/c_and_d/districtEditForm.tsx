@@ -51,6 +51,20 @@ export default function DistrictEditForm(pageProps: pageProps) {
 			maDinhDanhThanhPho: pageProps.district.maDinhDanhThanhPho,
 		},
 	});
+	async function deleteData() {
+		const response = await fetch(
+			`/api/database/districts/${pageProps.district.maDinhDanh}`,
+			{
+				method: "DELETE",
+			}
+		);
+		if (!response.ok) {
+			toast({ title: "khong xoa duoc quan." });
+			return;
+		}
+		toast({ title: "da xoa quan." });
+	}
+
 	async function handleSubmission(values: z.infer<typeof citySchema>) {
 		console.log(values);
 		const response = await fetch(
@@ -149,6 +163,9 @@ export default function DistrictEditForm(pageProps: pageProps) {
 				</form>
 			</Form>
 			<div className='flex items-center justify-end gap-3'>
+				<Button variant='destructive' onClick={deleteData}>
+					Delete
+				</Button>
 				<Button type='submit' form='cityEditForm'>
 					Update
 				</Button>

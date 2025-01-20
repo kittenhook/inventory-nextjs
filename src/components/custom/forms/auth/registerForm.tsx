@@ -40,40 +40,11 @@ export default function RegisterForm() {
 	const form = useForm<z.infer<typeof userLoginSchema>>({
 		resolver: zodResolver(userLoginSchema),
 		defaultValues: {
-			ten: "",
+			name: "",
 			email: "",
 			password: "",
 		},
 	});
-
-	// async function handleSubmission(values: z.infer<typeof userLoginSchema>) {
-	// 	const response = await fetch("/api/auth/register", {
-	// 		method: "POST",
-	// 		headers: {
-	// 			"Content-Type": "application/json",
-	// 		},
-	// 		body: JSON.stringify({
-	// 			name: values.name,
-	// 			email: values.email,
-	// 			password: values.password,
-	// 		}),
-	// 	});
-
-	// 	const date = new Date(Date.now());
-
-	// 	if (!response.ok) {
-	// 		toast({
-	// 			variant: "destructive",
-	// 			title: "Failed to sign up.",
-	// 			description: `${date.toTimeString()}, ${date.toLocaleDateString()}`,
-	// 		});
-	// 		return;
-	// 	}
-	// 	toast({
-	// 		title: "Signed up!",
-	// 		description: `${date.toTimeString()}, ${date.toLocaleDateString()}`,
-	// 	});
-	// }
 
 	return (
 		<div className='space-y-3'>

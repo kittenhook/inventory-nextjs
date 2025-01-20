@@ -19,7 +19,7 @@ import { useRouter } from "next/navigation";
 
 const newCitySchema = z.object({
 	ten: z.string().min(1, {
-		message: "A name must be provided",
+		message: "Phải điền tên thành phố.",
 	}),
 });
 
@@ -47,13 +47,13 @@ export default function CityCreateForm() {
 		if (!response.ok) {
 			toast({
 				variant: "destructive",
-				title: "Failed to create city.",
+				title: "Không thêm được thành phố.",
 				description: `${date.toTimeString()}, ${date.toLocaleDateString()}`,
 			});
 			return;
 		}
 		toast({
-			title: "Created city.",
+			title: "Đã thêm thành phố.",
 			description: `${date.toTimeString()}, ${date.toLocaleDateString()}`,
 		});
 		router.refresh();
@@ -62,7 +62,7 @@ export default function CityCreateForm() {
 	return (
 		<div className='space-y-3'>
 			<span className='text-2xl font-semibold tracking-tight'>
-				Create new city.
+				Thêm thành phố mới.
 			</span>
 			<Form {...form}>
 				<form
@@ -75,9 +75,9 @@ export default function CityCreateForm() {
 						name='ten'
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Name</FormLabel>
+								<FormLabel>Tên</FormLabel>
 								<FormControl>
-									<Input placeholder='Name' {...field} />
+									<Input placeholder='Hanoi' {...field} />
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -87,7 +87,7 @@ export default function CityCreateForm() {
 			</Form>
 			<div className='flex items-center justify-end gap-3'>
 				<Button type='submit' form='cityEditForm'>
-					Create
+					Thêm
 				</Button>
 			</div>
 		</div>

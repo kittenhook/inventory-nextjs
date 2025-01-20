@@ -56,27 +56,27 @@ import { useAuth } from "./AuthContext";
 // Menu items.
 const databaseItems = [
 	{
-		title: "Animals",
+		title: "Loài động vật",
 		url: "/database/dongVat",
 		icon: Cat,
 	},
 	{
-		title: "Trees",
+		title: "Giống cây trồng",
 		url: "/database/cayTrong",
 		icon: TreePine,
 	},
 	{
-		title: "Animals Facility",
-		url: "#",
+		title: "Cơ sở lưu trữ động vật",
+		url: "/database/coSoDongVat",
 		icon: Columns3,
 	},
 	{
-		title: "Trees Facility",
-		url: "#",
+		title: "Cơ sở sản xuất cây",
+		url: "/database/coSoCay",
 		icon: TentTree,
 	},
 	{
-		title: "Cities and Districts",
+		title: "Thành Phố và Quận",
 		url: "/database/capHanhChinh",
 		icon: Building2,
 	},
@@ -84,25 +84,26 @@ const databaseItems = [
 
 const siteItems = [
 	{
-		title: "Users",
+		title: "Người dùng",
 		url: "/database/nguoiDung",
 		icon: Database,
 	},
 	{
-		title: "Roles",
+		title: "Quyền",
 		url: "/database/Quyen",
 		icon: UsersRound,
 	},
 ];
 
 export default function AppSidebar() {
-	const { isAuthenticated } = useAuth();
+	const { isAuthenticated, isPrivileged } = useAuth();
+	console.log(`isAuth: ${isAuthenticated}, isPriv: ${isPrivileged}`);
 	return (
-		<Sidebar>
+		<Sidebar className='bg-gradient-to-r from-lime-300 to-lime-900'>
 			<SidebarHeader>
 				<div className='flex items-center gap-1'>
 					<span className='leading-none text-3xl font-extrabold'>
-						ATC2
+						KTPM
 					</span>
 					<span className='leading-none text-3xl font-extrabold'>
 						/
@@ -116,7 +117,7 @@ export default function AppSidebar() {
 				{isAuthenticated ? (
 					<>
 						<SidebarGroup>
-							<SidebarGroupLabel>Database</SidebarGroupLabel>
+							<SidebarGroupLabel>Cơ sở dữ liệu</SidebarGroupLabel>
 							<SidebarGroupContent>
 								<SidebarMenu>
 									{databaseItems.map((item) => (
@@ -132,36 +133,44 @@ export default function AppSidebar() {
 								</SidebarMenu>
 							</SidebarGroupContent>
 						</SidebarGroup>
-						<Collapsible className='group/collapsible'>
-							<SidebarGroup>
-								<SidebarGroupLabel asChild>
-									<CollapsibleTrigger>
-										Site Management
-										<ChevronDown className='ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180' />
-									</CollapsibleTrigger>
-								</SidebarGroupLabel>
-								<CollapsibleContent>
-									<SidebarGroupContent>
-										<SidebarMenu>
-											{siteItems.map((item) => (
-												<SidebarMenuItem
-													key={item.title}
-												>
-													<SidebarMenuButton asChild>
-														<Link href={item.url}>
-															<item.icon />
-															<span>
-																{item.title}
-															</span>
-														</Link>
-													</SidebarMenuButton>
-												</SidebarMenuItem>
-											))}
-										</SidebarMenu>
-									</SidebarGroupContent>
-								</CollapsibleContent>
-							</SidebarGroup>
-						</Collapsible>
+						{isPrivileged ? (
+							<Collapsible className='group/collapsible'>
+								<SidebarGroup>
+									<SidebarGroupLabel asChild>
+										<CollapsibleTrigger>
+											Quản lý website
+											<ChevronDown className='ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180' />
+										</CollapsibleTrigger>
+									</SidebarGroupLabel>
+									<CollapsibleContent>
+										<SidebarGroupContent>
+											<SidebarMenu>
+												{siteItems.map((item) => (
+													<SidebarMenuItem
+														key={item.title}
+													>
+														<SidebarMenuButton
+															asChild
+														>
+															<Link
+																href={item.url}
+															>
+																<item.icon />
+																<span>
+																	{item.title}
+																</span>
+															</Link>
+														</SidebarMenuButton>
+													</SidebarMenuItem>
+												))}
+											</SidebarMenu>
+										</SidebarGroupContent>
+									</CollapsibleContent>
+								</SidebarGroup>
+							</Collapsible>
+						) : (
+							<></>
+						)}
 					</>
 				) : (
 					<></>

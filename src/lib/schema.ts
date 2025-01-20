@@ -11,6 +11,7 @@ import {
 export const roles = pgTable("Quyen", {
 	maDinhDanh: text("maDinhDanh").notNull().unique().primaryKey(),
 	ten: text("ten").notNull(),
+	isPrivileged: boolean("isPrivileged").notNull().default(false),
 });
 
 export const users = pgTable("NguoiDung", {
@@ -55,12 +56,29 @@ export const sessions = pgTable("session", {
 export const loaiGiong = pgTable("loaiGiong", {
 	maDinhDanh: text("maDinhDanh").notNull().unique().primaryKey(),
 	ten: text("ten").notNull().unique(),
+	moiTruong: text("moiTruong").notNull(),
+	nangSuat: integer("nangSuat").notNull(),
+	tacDongMoiTruong: text("tacDongMoiTruong").notNull(),
 });
 
 export const coSoSanXuatCay = pgTable("coSoSanXuatCay", {
 	maDinhDanh: text("maDinhDanh").notNull().unique().primaryKey(),
 	ten: text("ten").notNull(),
 	congSuat: integer("congSuat").notNull(),
+	maDinhDanhLoaiHinhSanXuat: text("maDinhDanhLoaiHinhSanXuat").references(
+		() => loaiHinhSanXuat.maDinhDanh,
+		{
+			onDelete: "set null",
+			onUpdate: "cascade",
+		}
+	),
+	maDinhDanhHinhThucSanXuat: text("maDinhDanhHinhThucSanXuat").references(
+		() => hinhThucSanXuat.maDinhDanh,
+		{
+			onDelete: "set null",
+			onUpdate: "cascade",
+		}
+	),
 	maDinhDanhLoaiGiong: text("maDinhDanhLoaiGiong").references(
 		() => loaiGiong.maDinhDanh,
 		{
@@ -155,12 +173,13 @@ export const cities = pgTable("thanhPho", {
 export const districts = pgTable("quan", {
 	maDinhDanh: text("maDinhDanh").notNull().unique().primaryKey(),
 	ten: text("ten").notNull(),
-	maDinhDanhThanhPho: text("maDinhDanhThanhPho")
-		.references(() => cities.maDinhDanh, {
-			onDelete: "cascade",
+	maDinhDanhThanhPho: text("maDinhDanhThanhPho").references(
+		() => cities.maDinhDanh,
+		{
+			onDelete: "set null",
 			onUpdate: "cascade",
-		})
-		.notNull(),
+		}
+	),
 });
 
 // USER TYPES
@@ -211,8 +230,3 @@ export type newThanhPho = typeof cities.$inferInsert;
 
 export type Quan = typeof districts.$inferSelect;
 export type newQuan = typeof districts.$inferInsert;
-
-export type baselineType = {
-	maDinhDanh: string;
-	ten: string;
-};

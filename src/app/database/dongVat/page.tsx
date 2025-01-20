@@ -15,7 +15,7 @@ import AnimalTable from "@/components/custom/tables/animalsTable";
 import AnimalCreateForm from "@/components/custom/forms/animals/animalCreateForm";
 
 export default function AnimalPage() {
-	const { isAuthenticated, loadingAuth } = useAuth();
+	const { isAuthenticated, loadingAuth, isPrivileged } = useAuth();
 	const [data, setData] = useState<{
 		animals: LoaiDongVat[];
 		ttbt: TinhTrangBaoTon[];
@@ -53,18 +53,24 @@ export default function AnimalPage() {
 
 	return isAuthenticated ? (
 		<div className='space-y-3 p-5'>
-			<span className='text-3xl font-extrabold'>Animals database</span>
+			<span className='text-3xl font-extrabold'>
+				Cơ sở dữ liệu: Loài động vật
+			</span>
 			<Separator />
 			<div className='w-full flex justify-end'>
-				<Dialog>
-					<DialogTrigger asChild>
-						<Button>Add a record!</Button>
-					</DialogTrigger>
-					<DialogContent>
-						<DialogTitle />
-						<AnimalCreateForm lbd={data.lbd} ttbt={data.ttbt} />
-					</DialogContent>
-				</Dialog>
+				{isPrivileged ? (
+					<Dialog>
+						<DialogTrigger asChild>
+							<Button>Thêm</Button>
+						</DialogTrigger>
+						<DialogContent>
+							<DialogTitle />
+							<AnimalCreateForm lbd={data.lbd} ttbt={data.ttbt} />
+						</DialogContent>
+					</Dialog>
+				) : (
+					<></>
+				)}
 			</div>
 			<AnimalTable
 				animals={data.animals}

@@ -236,5 +236,21 @@ export async function createDistrict(
 	return createdDistrict;
 }
 
-export async function updateDistrict() {}
-export async function updateCity() {}
+export async function updateDistrict(districtsArguments: Quan) {
+	const [updatedDistrict] = await db
+		.update(districts)
+		.set(districtsArguments)
+		.where(eq(districts.maDinhDanh, districtsArguments.maDinhDanh))
+		.returning();
+	if (!updatedDistrict) return null;
+	return updatedDistrict;
+}
+export async function updateCity(cityArguments: ThanhPho) {
+	const [updatedCity] = await db
+		.update(cities)
+		.set(cityArguments)
+		.where(eq(cities.maDinhDanh, cityArguments.maDinhDanh))
+		.returning();
+	if (!updatedCity) return null;
+	return updatedCity;
+}
